@@ -1,0 +1,26 @@
+stages:
+  - build
+
+include:
+  - project: 'edquity/gitlab-ops'
+    file: 'token_cache_build.yml'
+
+branch:
+  extends: .build
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "main"'
+      when: always
+  variables:
+    CREATE_LATEST_IMAGE: ""
+
+main:
+  extends: .build
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+  variables:
+    CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
+
+  
