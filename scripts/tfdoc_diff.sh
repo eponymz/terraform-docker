@@ -13,7 +13,7 @@ For recursive terraform-docs diff on <path>.
 EOF
 else
   DOCDIFF=$(find "$1" -type f -iname README.md -not -path '*/.*' \
-  -exec sh -c 'i="$1"; terraform-docs markdown ${i%/README.md} | diff -q $i -' _ {} \;)
+  -exec sh -c 'i="$1"; terraform-docs markdown --sort-by-required=true ${i%/README.md} | diff -q $i -' _ {} \;)
   if [ "$(echo "$DOCDIFF" | grep -c differ)" -gt 0 ]; then
     echo "Differences have been found:"
     echo "$DOCDIFF"
