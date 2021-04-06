@@ -3,8 +3,6 @@ ARG TERRAFORM_VERSION=0.13.6
 ARG HADOLINT_VERSION=2.1.0
 ARG SHELLCHECK_VERSION=0.7.1
 WORKDIR /
-COPY Dockerfile .
-COPY scripts/*.sh .
 RUN mkdir /root/bin
 RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
@@ -16,6 +14,8 @@ RUN wget -q https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHE
 RUN go get github.com/terraform-docs/terraform-docs
 RUN go get github.com/terraform-linters/tflint
 RUN go get github.com/tfsec/tfsec/cmd/tfsec
+COPY Dockerfile .
+COPY scripts/*.sh .
 RUN cp -r /go/bin/* /root/bin
 RUN hadolint Dockerfile && shellcheck -- *.sh
 
