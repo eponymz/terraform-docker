@@ -1,7 +1,6 @@
-package cmd
+package validate
 
 import (
-	"bytes"
 	"fmt"
 	"os/exec"
 
@@ -23,10 +22,8 @@ using tflint`,
 			cmd.Help()
 		} else {
 			tflint := exec.Command("tflint", args[0])
-			var out bytes.Buffer
-			tflint.Stdout = &out
-			tflint.Run()
-			fmt.Print(out.String())
+			out, _ := tflint.CombinedOutput()
+			fmt.Print(string(out))
 		}
 	},
 }
@@ -44,11 +41,9 @@ using tfsec`,
 			fmt.Println("You must pass a directory to validate tfsec command")
 			cmd.Help()
 		} else {
-			tflint := exec.Command("tfsec", args[0])
-			var out bytes.Buffer
-			tflint.Stdout = &out
-			tflint.Run()
-			fmt.Print(out.String())
+			tfsec := exec.Command("tfsec", args[0])
+			out, _ := tfsec.CombinedOutput()
+			fmt.Print(string(out))
 		}
 	},
 }
@@ -66,11 +61,9 @@ using tffmt`,
 			fmt.Println("You must pass a directory to validate tffmt command")
 			cmd.Help()
 		} else {
-			tflint := exec.Command("terraform", "fmt", args[0])
-			var out bytes.Buffer
-			tflint.Stdout = &out
-			tflint.Run()
-			fmt.Print(out.String())
+			tffmt := exec.Command("terraform", "fmt", args[0])
+			out, _ := tffmt.CombinedOutput()
+			fmt.Print(string(out))
 		}
 	},
 }
@@ -88,11 +81,9 @@ using terraform-docs`,
 			fmt.Println("You must pass a directory to validate tfdoc command")
 			cmd.Help()
 		} else {
-			tflint := exec.Command("terraform-docs", "markdown", "--sort-by-required=true", args[0])
-			var out bytes.Buffer
-			tflint.Stdout = &out
-			tflint.Run()
-			fmt.Print(out.String())
+			tfdoc := exec.Command("terraform-docs", "markdown", "--sort-by-required=true", args[0])
+			out, _ := tfdoc.CombinedOutput()
+			fmt.Print(string(out))
 		}
 	},
 }
@@ -120,19 +111,13 @@ using terraform-docs, terraform fmt, tflint, and tfsec`,
 }
 
 func init() {
-	RootCmd.AddCommand(validateCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// validateCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	validateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	validateCmd.AddCommand(tflintCmd)
 	validateCmd.AddCommand(tfsecCmd)
 	validateCmd.AddCommand(tffmtCmd)
 	validateCmd.AddCommand(tfdocCmd)
+}
+
+func GetCmd() *cobra.Command {
+	return validateCmd
 }
