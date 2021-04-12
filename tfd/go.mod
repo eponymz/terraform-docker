@@ -1,4 +1,4 @@
-module td-cli
+module tfd
 
 go 1.16
 

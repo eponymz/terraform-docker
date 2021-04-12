@@ -1,7 +1,7 @@
 package main
 
 import (
-	"td-cli/cmd"
+	"tfd/cmd"
 )
 
 func main() {
