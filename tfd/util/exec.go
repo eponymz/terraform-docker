@@ -1,6 +1,8 @@
 package util
 
 import (
+	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -59,6 +61,25 @@ func ExecExceptR(exceptions []string, command string, args ...string) string {
 	directory := args[0]
 	for _, dir := range DirTreeList(directory) {
 		response += ExecExcept(exceptions, command, append([]string{dir}, args[1:]...)...) + "\n"
+	}
+	return response
+}
+
+func ExecExceptRCompare(exceptions []string, compare string, command string, args ...string) string {
+	var response string
+	directory := args[0]
+	for _, dir := range DirTreeList(directory) {
+		file := fmt.Sprintf("%s/%s", dir, compare)
+		if _, err := os.Stat(file); !os.IsNotExist(err) {
+			logrus.Tracef("ExecExceptRCompare found file %s", file)
+			currentGen := ExecExcept(exceptions, command, append([]string{dir}, args[1:]...)...)
+			existing, _ := ioutil.ReadFile(file)
+			if strings.Compare(currentGen, string(existing)) != 0 {
+				response += fmt.Sprintf("Command %s returned differences from %s\n", command, file)
+			}
+		} else {
+			logrus.Tracef("ExecExceptRCompare could not find file %s, skipping %s", file, dir)
+		}
 	}
 	return response
 }
