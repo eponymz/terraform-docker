@@ -1,59 +1,36 @@
 package util
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 )
 
-func SliceContains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
-}
-
-func InExceptions(exceptions []string, term string) bool {
-	for _, e := range exceptions {
-		regex := fmt.Sprintf("^%s.*", e)
-		matched, _ := regexp.MatchString(regex, term)
-		if matched {
-			logrus.Tracef("Term %s was matched in %s with %s", term, exceptions, regex)
-			return true
-		}
-	}
-	logrus.Tracef("Term %s was not matched in %s", term, exceptions)
-	return false
-}
-
 func ExecExcept(exceptions []string, commandName string, args ...string) string {
 	directory := args[0]
-	if !InExceptions(exceptions, directory) {
-		var safeCommand string
-		var safeArgs []string
-		if strings.Contains(commandName, " ") {
-			logrus.Tracef("CommandName '%s' contained spaces, splitting...", commandName)
-			split := strings.Split(commandName, " ")
-			safeCommand = split[0]
-			safeArgs = append(split[1:], args...)
-		} else {
-			safeCommand = commandName
-			safeArgs = args
-		}
-		logrus.Tracef("Running command %s on %s with args %s", safeCommand, directory, safeArgs)
-		command := exec.Command(safeCommand, safeArgs...)
-		out, _ := command.CombinedOutput()
-		return string(out)
+	if !SliceEmpty(exceptions) && InExceptions(exceptions, directory) {
+		logrus.Tracef("Length of exceptions: %d", len(exceptions))
+		logrus.Tracef("Skipping directory %s as it is in the passed exceptions %s.", directory, exceptions)
+		return ""
 	}
-	logrus.Tracef("Skipping directory %s as it is in the passed exceptions %s.", directory, exceptions)
-	return ""
+	var safeCommand string
+	var safeArgs []string
+	if strings.Contains(commandName, " ") {
+		logrus.Tracef("CommandName '%s' contained spaces, splitting...", commandName)
+		split := strings.Split(commandName, " ")
+		safeCommand = split[0]
+		safeArgs = append(split[1:], args[1:]...)
+	} else {
+		safeCommand = commandName
+		safeArgs = args[1:]
+	}
+	logrus.Tracef("Running command %s on %s with args %s", safeCommand, directory, safeArgs)
+	command := exec.Command(safeCommand, append(safeArgs, directory)...)
+	out, _ := command.CombinedOutput()
+	return string(out)
 }
 
 func DirTreeList(directory string) []string {

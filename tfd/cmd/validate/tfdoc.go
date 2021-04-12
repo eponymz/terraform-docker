@@ -24,7 +24,7 @@ using terraform-docs`,
 			cmd.Help()
 		} else {
 			except := strings.Split(viper.GetString("IGNORE"), " ")
-			tfdoc := util.ExecExceptR(except, "terraform-docs", "markdown", "--sort-by-required=true", args[0])
+			tfdoc := util.ExecExceptR(except, "terraform-docs", args[0], "markdown", "--sort-by-required=true")
 			fmt.Print(tfdoc)
 		}
 	},
