@@ -25,7 +25,7 @@ using tflint`,
 		} else {
 			except := strings.Split(viper.GetString("IGNORE"), " ")
 			tflint := util.ExecExceptR(except, "tflint", args[0])
-			fmt.Print(tflint)
+			fmt.Println(tflint)
 		}
 	},
 }

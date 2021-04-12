@@ -1,4 +1,3 @@
-resource "my_socks" "always" {
-  come out of the dryer
-  without = a = match
+resource "aws_instance" "invalid_type" {
+  instance_type = "t2.skynet"
 }
