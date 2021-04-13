@@ -73,6 +73,6 @@ func InitConfig() {
 		logrus.Debugf("Using config file: %s", viper.ConfigFileUsed())
 	}
 	SetLogLevel(string(viper.GetString("LOGLEVEL")))
-	logrus.Debugf("Logging level: %s\n", logrus.GetLevel().String())
+	logrus.Debugf("Logging level: %s", logrus.GetLevel().String())
 	logrus.Debugf("Viper keys are: %s", viper.AllKeys())
 }

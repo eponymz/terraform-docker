@@ -17,7 +17,7 @@ var tfsecCmd = &cobra.Command{
 using tfsec`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logrus.Trace("tfsec cobra command called")
-		logrus.Tracef("Arguments: %s\n", args)
+		logrus.Tracef("Arguments: %s", args)
 
 		if len(args) < 1 {
 			fmt.Println("You must pass a directory to validate tfsec command")
@@ -26,6 +26,9 @@ using tfsec`,
 			except := strings.Split(viper.GetString("IGNORE"), " ")
 			tfsec := util.ExecExceptR(except, "tfsec", args[0])
 			fmt.Print(tfsec)
+			if strings.Contains(tfsec, "potential problems detected") {
+				fmt.Println("Validation Failed!")
+			}
 		}
 	},
 }

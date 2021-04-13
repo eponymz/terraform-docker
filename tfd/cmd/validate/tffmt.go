@@ -17,7 +17,7 @@ var tffmtCmd = &cobra.Command{
 using tffmt`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logrus.Trace("tffmt cobra command called")
-		logrus.Tracef("Arguments: %s\n", args)
+		logrus.Tracef("Arguments: %s", args)
 
 		if len(args) < 1 {
 			fmt.Println("You must pass a directory to validate tffmt command")
@@ -26,6 +26,9 @@ using tffmt`,
 			except := strings.Split(viper.GetString("IGNORE"), " ")
 			tffmt := util.ExecExceptR(except, "terraform fmt", args[0])
 			fmt.Print(tffmt)
+			if strings.Contains(tffmt, ".tf") {
+				fmt.Println("Validation Failed!")
+			}
 		}
 	},
 }

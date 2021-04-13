@@ -17,15 +17,18 @@ var tfdocCmd = &cobra.Command{
 using terraform-docs`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logrus.Trace("tfdoc cobra command called")
-		logrus.Tracef("Arguments: %s\n", args)
+		logrus.Tracef("Arguments: %s", args)
 
 		if len(args) < 1 {
 			fmt.Println("You must pass a directory to validate tfdoc command")
 			cmd.Help()
 		} else {
 			except := strings.Split(viper.GetString("IGNORE"), " ")
-			tfdoc := util.ExecExceptR(except, "terraform-docs", args[0], "markdown", "--sort-by-required=true")
+			tfdoc := util.ExecExceptRCompare(except, "README.md", "terraform-docs", args[0], "markdown", "--sort-by-required=true")
 			fmt.Print(tfdoc)
+			if strings.Contains(tfdoc, "returned differences") {
+				fmt.Println("Validation Failed!")
+			}
 		}
 	},
 }

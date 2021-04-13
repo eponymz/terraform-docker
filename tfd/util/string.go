@@ -17,11 +17,7 @@ func SliceContains(s []string, e string) bool {
 }
 
 func SliceEmpty(slice []string) bool {
-	// if len(slice) > 1 {
-	// 	return true
-	// }
 	for _, s := range slice {
-		logrus.Tracef("Checking string length of %s", s)
 		if len(s) > 0 {
 			return false
 		}
