@@ -1,18 +1,10 @@
 package test
 
 import (
-	"os"
 	"strings"
 	"testing"
-	"tfd/cmd"
 	"tfd/util"
 )
-
-func TestMain(m *testing.M) {
-	cmd.InitConfig() // Unified logging configuration from app
-	code := m.Run()
-	os.Exit(code)
-}
 
 func TestExecExceptAll(t *testing.T) {
 	exceptions := []string{"test"}

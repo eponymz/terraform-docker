@@ -43,3 +43,19 @@ func init() {
 func GetCmd() *cobra.Command {
 	return validateCmd
 }
+
+func GettfdocCmd() *cobra.Command {
+	return tfdocCmd
+}
+
+func GettffmtCmd() *cobra.Command {
+	return tffmtCmd
+}
+
+func GettflintCmd() *cobra.Command {
+	return tflintCmd
+}
+
+func GettfsecCmd() *cobra.Command {
+	return tfsecCmd
+}
