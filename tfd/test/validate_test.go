@@ -13,7 +13,7 @@ func TestTfdocClean(t *testing.T) {
 	stdout, r, w := util.CaptureStdout()
 	tfdoc.Run(tfdoc, []string{"doc_clean"})
 	got := util.ReleaseStdout(stdout, r, w)
-	wants := "\n"
+	wants := ""
 	if got != wants {
 		t.Fatalf("Tfdoc wants %s, got %s", wants, got)
 	}
