@@ -17,7 +17,7 @@ var tflintCmd = &cobra.Command{
 using tflint`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logrus.Trace("tflint cobra command called")
-		logrus.Tracef("Arguments: %s\n", args)
+		logrus.Tracef("Arguments: %s", args)
 
 		if len(args) < 1 {
 			fmt.Println("You must pass a directory to validate tflint command")

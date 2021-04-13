@@ -45,7 +45,7 @@ func DirTreeList(directory string) []string {
 	err := filepath.Walk(directory,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				logrus.Errorf("DirTreeList had an error with %s: \n%s", directory, err.Error())
+				logrus.Errorf("DirTreeList had an error with %s: %s", directory, err.Error())
 				return err
 			}
 			if info.IsDir() {
