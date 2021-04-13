@@ -31,6 +31,7 @@ func ExecExcept(exceptions []string, commandName string, args ...string) string 
 	}
 	logrus.Tracef("Running command %s on %s with args %s", safeCommand, directory, safeArgs)
 	command := exec.Command(safeCommand, append(safeArgs, directory)...)
+	logrus.Tracef("Command %s path: %s", safeCommand, command.Path)
 	out, _ := command.CombinedOutput()
 	return string(out)
 }

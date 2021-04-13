@@ -3,6 +3,7 @@ ARG TERRAFORM_VERSION=0.13.6
 ARG HADOLINT_VERSION=2.1.0
 ARG SHELLCHECK_VERSION=0.7.1
 WORKDIR /
+# External tools
 RUN mkdir /root/bin
 RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
@@ -14,12 +15,12 @@ RUN wget -q https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHE
 RUN go get github.com/terraform-docs/terraform-docs
 RUN go get github.com/terraform-linters/tflint
 RUN go get github.com/tfsec/tfsec/cmd/tfsec
+RUN apk add build-base --no-cache
+# Frequent cache invalidators
 COPY Dockerfile .
-COPY scripts/*.sh .
-RUN cp -r /go/bin/* /root/bin
-RUN hadolint Dockerfile && shellcheck -- *.sh
-
-FROM alpine:3.13
-WORKDIR /
-COPY --from=builder /root/bin/* /usr/bin/
-COPY scripts/*.sh /usr/bin/
+RUN hadolint --ignore DL3006 --ignore DL3018 Dockerfile
+COPY tfd /tfd
+WORKDIR /tfd
+RUN export PATH=$PATH:/root/bin && export TFD_LOGLEVEL=trace && go test ./test -v -coverpkg=./...
+RUN go build . && mv tfd /go/bin/
+CMD ["tfd"]

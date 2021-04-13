@@ -61,7 +61,7 @@ func TestTfsec(t *testing.T) {
 	stdout, r, w := CaptureStdout()
 	tfsec.Run(tfsec, []string{"fmt"})
 	got := ReleaseStdout(stdout, r, w)
-	wants := "potential problems detecte"
+	wants := "potential problems detected"
 	if !strings.Contains(got, wants) {
 		t.Fatalf("Tfsec wants %s, got %s", wants, got)
 	}
