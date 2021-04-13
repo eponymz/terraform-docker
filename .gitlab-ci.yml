@@ -23,31 +23,3 @@ main:
       when: always
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
-
-.self-test:
-  stage: test
-  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
-  
-test-fmt:
-  extends: .self-test
-  script:
-    - |
-      [ $(tffmt_diff.sh tests/fmt_test.tf | grep -c 'tests/fmt_test.tf') -eq 1 ] && exit 0
-  
-test-sec:
-  extends: .self-test
-  script:
-    - |
-      [ $(tfsec tests | grep -c 'tests/fmt_test.tf') -eq 1 ] && exit 0
-
-test-lint:
-  extends: .self-test
-  script:
-    - |
-      [ $(tflint_recurse.sh tests | grep -c 'tests/lint_test.tf') -eq 1 ] && exit 0
-
-test-doc:
-  extends: .self-test
-  script:
-    - |
-      [ $(tfdoc_diff.sh tests | grep -c 'tests/doc_test/README.md') -eq 1 ] && exit 0
