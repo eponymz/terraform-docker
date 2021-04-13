@@ -6,23 +6,6 @@ import (
 	"tfd/util"
 )
 
-<<<<<<< HEAD
-func TestMain(m *testing.M) {
-	cmd.InitConfig() // Unified logging configuration from app
-	code := m.Run()
-	os.Exit(code)
-}
-
-func TestSliceContains(t *testing.T) {
-	slice := []string{"some", "test", "values"}
-	term := "values"
-	if !util.SliceContains(slice, term) {
-		t.Fatal("SliceContains(slice, term) wants true, got false.")
-	}
-}
-
-=======
->>>>>>> 7d7fbdb6bce3cb1216cb02f8b9c2b820939c6c62
 func TestExecExceptAll(t *testing.T) {
 	exceptions := []string{"test"}
 	got := util.ExecExcept(exceptions, "ls", "test")
@@ -86,11 +69,7 @@ func TestExecExceptRNegative(t *testing.T) {
 
 func TestExecExceptRfmt(t *testing.T) {
 	exceptions := []string{"../test", "empty"}
-<<<<<<< HEAD
-	got := util.ExecExceptR(exceptions, "terraform fmt", "..", "--help")
-=======
 	got := util.ExecExceptR(exceptions, "terraform fmt", ".", "--help")
->>>>>>> 7d7fbdb6bce3cb1216cb02f8b9c2b820939c6c62
 	wants := "Usage: terraform fmt"
 	if !strings.Contains(got, wants) {
 		t.Fatalf("ExecExceptR wants %s got %s", wants, got)
