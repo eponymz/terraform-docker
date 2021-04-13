@@ -26,6 +26,9 @@ using tffmt`,
 			except := strings.Split(viper.GetString("IGNORE"), " ")
 			tffmt := util.ExecExceptR(except, "terraform fmt", args[0])
 			fmt.Print(tffmt)
+			if strings.Contains(tffmt, ".tf") {
+				fmt.Println("Validation Failed!")
+			}
 		}
 	},
 }

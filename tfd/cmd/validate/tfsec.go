@@ -26,6 +26,9 @@ using tfsec`,
 			except := strings.Split(viper.GetString("IGNORE"), " ")
 			tfsec := util.ExecExceptR(except, "tfsec", args[0])
 			fmt.Print(tfsec)
+			if strings.Contains(tfsec, "potential problems detected") {
+				fmt.Println("Validation Failed!")
+			}
 		}
 	},
 }

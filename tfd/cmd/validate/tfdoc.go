@@ -25,7 +25,10 @@ using terraform-docs`,
 		} else {
 			except := strings.Split(viper.GetString("IGNORE"), " ")
 			tfdoc := util.ExecExceptRCompare(except, "README.md", "terraform-docs", args[0], "markdown", "--sort-by-required=true")
-			fmt.Print(tfdoc)
+			fmt.Println(tfdoc)
+			if strings.Contains(tfdoc, "returned differences") {
+				fmt.Println("Validation Failed!")
+			}
 		}
 	},
 }
