@@ -7,9 +7,56 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"github.com/sirupsen/logrus"
 )
+
+func ExecExitCode(program string, args ...string) int {
+	var safeProgram string
+	var safeArgs []string
+	var returnCode int = 0
+
+	if strings.Contains(program, " ") {
+		logrus.Tracef("Program '%s' contained spaces, splitting...", program)
+		split := strings.Split(program, " ")
+		safeProgram = split[0]
+		safeArgs = append(split[1:], args...)
+	} else {
+		safeProgram = program
+		safeArgs = args
+	}
+	logrus.Infof("Running command %s with args %s", safeProgram, safeArgs)
+	cmd := exec.Command(safeProgram, safeArgs...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	logrus.Tracef("Command %s path: %s", safeProgram, cmd.Path)
+	if !strings.Contains(cmd.Path, "/") {
+		logrus.Errorf("Command %s not in PATH!", cmd.Path)
+		returnCode = 1
+	}
+
+	if err := cmd.Start(); err != nil {
+		logrus.Errorf("%s failed to start\n%v", program, err)
+		returnCode = 1
+	}
+
+	if err := cmd.Wait(); err != nil {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			// Program has exited with an exit code != 0
+			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				logrus.Errorf("%s exit status: %v", program, status.ExitStatus())
+				returnCode = status.ExitStatus()
+			}
+		} else {
+			logrus.Errorf("%s failed!\n%s", program, err)
+			returnCode = 1
+		}
+	}
+	logrus.Infof("%s completed successfully!", program)
+	return returnCode
+}
 
 func ExecExcept(exceptions []string, commandName string, args ...string) string {
 	directory := args[0]
