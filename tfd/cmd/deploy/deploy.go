@@ -12,6 +12,7 @@ import (
 
 var Path string
 var Action string
+var Workspace string
 
 var validActions = []string{"init", "plan", "apply", "workspace"}
 
@@ -23,6 +24,7 @@ var deployCmd = &cobra.Command{
 		log.Trace("deploy called")
 		log.Tracef("Action: %s", Action)
 		log.Tracef("Path: %s", Path)
+		log.Tracef("Workspace: %s", Workspace)
 
 		if !util.SliceContains(validActions, Action) {
 			log.Fatalf("Invalid action provided. Valid actions: %s", validActions)
@@ -41,7 +43,9 @@ var deployCmd = &cobra.Command{
 func init() {
 	deployCmd.Flags().StringVarP(&Action, "action", "a", "plan", "Action you wish to execute in the path.")
 	deployCmd.Flags().StringVarP(&Path, "path", "p", "", "Path to the directory you wish to deploy.")
+	deployCmd.Flags().StringVarP(&Workspace, "workspace", "w", "", "Workspace/Environment you wish to deploy.")
 	deployCmd.MarkFlagRequired("path")
+	deployCmd.MarkFlagRequired("workspace")
 }
 
 func GetCmd() *cobra.Command {

@@ -30,7 +30,6 @@ func ExecExitCode(program string, args ...string) int {
 	cmd := exec.Command(safeProgram, safeArgs...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
 	logrus.Tracef("Command %s path: %s", safeProgram, cmd.Path)
 	if !strings.Contains(cmd.Path, "/") {
 		logrus.Errorf("Command %s not in PATH!", cmd.Path)
