@@ -30,22 +30,23 @@ func ExecExitCode(program string, args ...string) int {
 	cmd := exec.Command(safeProgram, safeArgs...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
 	logrus.Tracef("Command %s path: %s", safeProgram, cmd.Path)
 	if !strings.Contains(cmd.Path, "/") {
 		logrus.Errorf("Command %s not in PATH!", cmd.Path)
 		returnCode = 1
 	}
 
-	if err := cmd.Start(); err != nil {
+	if err := cmd.Start(); err != nil && returnCode == 0 {
 		logrus.Errorf("%s failed to start\n%v", program, err)
 		returnCode = 1
 	}
 
-	if err := cmd.Wait(); err != nil {
+	if err := cmd.Wait(); err != nil && returnCode == 0 {
 		if exiterr, ok := err.(*exec.ExitError); ok {
 			// Program has exited with an exit code != 0
 			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
-				logrus.Errorf("%s exit status: %v", program, status.ExitStatus())
+				logrus.Warnf("%s exit status: %v", program, status.ExitStatus())
 				returnCode = status.ExitStatus()
 			}
 		} else {

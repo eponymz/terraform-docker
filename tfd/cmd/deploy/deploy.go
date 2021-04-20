@@ -1,26 +1,28 @@
 package deploy
 
 import (
-	// "fmt"
 	"os"
 	"tfd/util"
 	tf "tfd/util/terraform"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
-
-var Path string
-var Action string
-var Workspace string
-
-var validActions = []string{"init", "plan", "apply", "workspace"}
 
 var deployCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "deploys a terraform directory",
-	Long: `This command executes Terraform commands to deploy infrastructure.`,
+	Long:  `This command executes Terraform commands to deploy infrastructure.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		var (
+			//used for flags
+			Action       string = viper.GetString("ACTION")
+			Path         string = viper.GetString("PATH")
+			Workspace    string = viper.GetString("WORKSPACE")
+			validActions        = []string{"init", "plan", "apply"}
+		)
+
 		log.Trace("deploy called")
 		log.Tracef("Action: %s", Action)
 		log.Tracef("Path: %s", Path)
@@ -37,13 +39,43 @@ var deployCmd = &cobra.Command{
 		if init := tf.Init(Path); init > 0 {
 			log.Fatalf("Init returned non zero exit code: %v", init)
 		}
+
+		switch Action {
+		case "init":
+			break
+		case "plan":
+			if plan := tf.Plan(Path, Workspace); plan > 0 {
+				log.Fatalf("Plan returned non zero exit code: %v", plan)
+			}
+			break
+		case "apply":
+			if plan := tf.Plan(Path, Workspace); plan > 0 {
+				log.Fatalf("Plan returned non zero exit code: %v", plan)
+			}
+			if apply := tf.Apply(Path, Workspace); apply > 0 {
+				log.Fatalf("Apply returned non zero exit code: %v", apply)
+			}
+			break
+		default:
+			if plan := tf.Plan(Path, Workspace); plan > 0 {
+				log.Fatalf("Plan returned non zero exit code: %v", plan)
+			}
+			break
+		}
 	},
 }
 
 func init() {
-	deployCmd.Flags().StringVarP(&Action, "action", "a", "plan", "Action you wish to execute in the path.")
-	deployCmd.Flags().StringVarP(&Path, "path", "p", "", "Path to the directory you wish to deploy.")
-	deployCmd.Flags().StringVarP(&Workspace, "workspace", "w", "", "Workspace/Environment you wish to deploy.")
+	deployCmd.Flags().StringP("action", "a", "plan", "Action you wish to execute in the path.")
+	deployCmd.Flags().StringP("path", "p", "", "Path to the directory you wish to deploy.")
+	deployCmd.Flags().StringP("workspace", "w", "", "Workspace/Environment you wish to deploy.")
+	deployCmd.Flags().Bool("auto-apply", false, "Whether running in pipeline or not.")
+	viper.BindPFlag("AUTOAPPLY", deployCmd.Flags().Lookup("auto-apply"))
+	viper.BindPFlag("ACTION", deployCmd.Flags().Lookup("action"))
+	viper.BindPFlag("PATH", deployCmd.Flags().Lookup("path"))
+	viper.BindPFlag("WORKSPACE", deployCmd.Flags().Lookup("workspace"))
+	viper.SetDefault("AUTOAPPLY", false)
+	viper.SetDefault("ACTION", "plan")
 	deployCmd.MarkFlagRequired("path")
 	deployCmd.MarkFlagRequired("workspace")
 }

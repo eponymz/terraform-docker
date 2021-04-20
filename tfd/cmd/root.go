@@ -50,7 +50,6 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tfd.yaml)")
 	RootCmd.PersistentFlags().StringP("verbosity", "v", "Info", "Verbosity in logging level. E.g. Info, Warn, Debug.")
-	RootCmd.PersistentFlags().Bool("automation", false, "Whether running in pipeline or not.")
 	RootCmd.AddCommand(validate.GetCmd())
 	RootCmd.AddCommand(deploy.GetCmd())
 }
@@ -70,9 +69,7 @@ func InitConfig() {
 
 	viper.SetEnvPrefix("TFD")
 	viper.SetDefault("LOGLEVEL", "Info")
-	viper.SetDefault("AUTOMATION", false)
 	viper.BindPFlag("LOGLEVEL", RootCmd.PersistentFlags().Lookup("verbosity"))
-	viper.BindPFlag("AUTOMATION", RootCmd.PersistentFlags().Lookup("automation"))
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err == nil {
 		logrus.Debugf("Using config file: %s", viper.ConfigFileUsed())
