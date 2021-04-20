@@ -131,6 +131,7 @@ func WorkspaceCheck(path string, workspace string) bool {
 	return isValid
 }
 
+// executes the workspace validation and switch flow
 func ExecWorkspaceValidate(workspace string) (bool, string) {
 	var (
 		wsValid bool
