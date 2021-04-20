@@ -5,7 +5,7 @@ import (
 	"tfd/util"
 	tf "tfd/util/terraform"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,42 +23,40 @@ var deployCmd = &cobra.Command{
 			validActions        = []string{"init", "plan", "apply"}
 		)
 
-		log.Trace("deploy called")
-		log.Tracef("Action: %s", Action)
-		log.Tracef("Path: %s", Path)
-		log.Tracef("Workspace: %s", Workspace)
+		logrus.Trace("deploy called")
+		logrus.Tracef("Action: %s", Action)
+		logrus.Tracef("Path: %s", Path)
+		logrus.Tracef("Workspace: %s", Workspace)
 
 		if !util.SliceContains(validActions, Action) {
-			log.Fatalf("Invalid action provided. Valid actions: %s", validActions)
+			logrus.Fatalf("Invalid action provided. Valid actions: %s", validActions)
 		}
 
 		if _, err := os.Stat(Path); os.IsNotExist(err) {
-			log.Fatalf("Invalid path provided. '%s' does not exist!", Path)
+			logrus.Fatalf("Invalid path provided. '%s' does not exist!", Path)
 		}
 
 		if init := tf.Init(Path); init > 0 {
-			log.Fatalf("Init returned non zero exit code: %v", init)
+			logrus.Fatalf("Init returned non zero exit code: %v", init)
 		}
 
 		switch Action {
 		case "init":
 			break
-		case "plan":
-			if plan := tf.Plan(Path, Workspace); plan > 0 {
-				log.Fatalf("Plan returned non zero exit code: %v", plan)
-			}
-			break
+		// case "plan":
+		// 	if plan := tf.Plan(Path, Workspace); plan > 0 {
+		// 		logrus.Fatalf("Plan returned non zero exit code: %v", plan)
+		// 	}
+		// 	break
 		case "apply":
-			if plan := tf.Plan(Path, Workspace); plan > 0 {
-				log.Fatalf("Plan returned non zero exit code: %v", plan)
-			}
 			if apply := tf.Apply(Path, Workspace); apply > 0 {
-				log.Fatalf("Apply returned non zero exit code: %v", apply)
+				logrus.Fatalf("Apply returned non zero exit code: %v", apply)
 			}
 			break
 		default:
+			logrus.Debugf("Defaulting action to 'plan'. Action provided: %s", Action)
 			if plan := tf.Plan(Path, Workspace); plan > 0 {
-				log.Fatalf("Plan returned non zero exit code: %v", plan)
+				logrus.Fatalf("Plan returned non zero exit code: %v", plan)
 			}
 			break
 		}
