@@ -43,11 +43,6 @@ var deployCmd = &cobra.Command{
 		switch Action {
 		case "init":
 			break
-		// case "plan":
-		// 	if plan := tf.Plan(Path, Workspace); plan > 0 {
-		// 		logrus.Fatalf("Plan returned non zero exit code: %v", plan)
-		// 	}
-		// 	break
 		case "apply":
 			if apply := tf.Apply(Path, Workspace); apply > 0 {
 				logrus.Fatalf("Apply returned non zero exit code: %v", apply)
