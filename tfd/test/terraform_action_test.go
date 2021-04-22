@@ -106,11 +106,11 @@ func TestWorkspaceExecInvalid(t *testing.T) {
 	gotValid, _ := tf.WorkspaceExec("valid")
 	wantsValid := false
 	os.Chdir("../")
-		// final test to create these files. clear to remove.
-		os.RemoveAll("./deploy/.terraform")
-		os.RemoveAll("./deploy/terraform.tfstate.d")
-		os.Remove("./deploy/plan.tmp")
-		os.Remove("./deploy/terraform.tfstate")
+	// final test to create these files. clear to remove.
+	os.RemoveAll("./deploy/.terraform")
+	os.RemoveAll("./deploy/terraform.tfstate.d")
+	os.Remove("./deploy/plan.tmp")
+	os.Remove("./deploy/terraform.tfstate")
 	if gotValid != wantsValid {
 		t.Fatalf("WorkspaceExec returned: %t Expected: %t with empty return string", gotValid, wantsValid)
 	}
