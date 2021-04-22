@@ -75,3 +75,19 @@ func TestExecExceptRfmt(t *testing.T) {
 		t.Fatalf("ExecExceptR wants %s got %s", wants, got)
 	}
 }
+
+func TestExecExitCodeSuccess(t *testing.T) {
+	got := util.ExecExitCode("ls", ".")
+	wants := 0
+	if got != wants {
+		t.Fatalf("ExecExitCode wants %d got %d", wants, got)
+	}
+}
+
+func TestExecExitCodeNoCommand(t *testing.T) {
+	got := util.ExecExitCode("lolcat", "--help")
+	wants := 1
+	if got != wants {
+		t.Fatalf("ExecExitCode should fail to run commands that do not exist. Got %d, wants %d", got, wants)
+	}
+}

@@ -34,8 +34,7 @@ func Plan(path string, workspace string) int {
 		}
 		logrus.Tracef("Terraform plan will execute with: %s", planArgs)
 		switch planResult := util.ExecExitCode("terraform plan", "-out=plan.tmp", planArgs); planResult {
-		case 0:
-		case 1:
+		case 0, 1:
 			planExit = planResult
 			break
 		case 2:
