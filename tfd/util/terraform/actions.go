@@ -33,14 +33,11 @@ func Plan(path string, workspace string) int {
 			planArgs += addArgs
 		}
 		logrus.Tracef("Terraform plan will execute with: %s", planArgs)
-		switch planResult := util.ExecExitCode("terraform plan", "-out=plan.tmp", planArgs); planResult {
-		case 0, 1:
-			planExit = planResult
-			break
-		case 2:
+		if planResult := util.ExecExitCode("terraform plan", "-out=plan.tmp", planArgs); planResult == 2 {
 			logrus.Debug("INF-155 will build out plan evaluation. Always returns 0 unless evaluation fails.")
 			planExit = 0
-			break
+		} else {
+			planExit = planResult
 		}
 	}
 	return planExit
