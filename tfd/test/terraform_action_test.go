@@ -14,14 +14,14 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func TestPlan(t *testing.T) {
+func TestPlanFail(t *testing.T) {
 	got := tf.Plan("../tf_fail", "default")
 	if got != 1 {
 		t.Fatalf("tf.Plan() should return 1 when no configuration files are present, got: %d", got)
 	}
 }
 
-func TestApply(t *testing.T) {
+func TestApplyFail(t *testing.T) {
 	got := tf.Apply("../tf_fail", "default")
 	if got != 1 {
 		t.Fatalf("tf.Apply() should return 1 when no configuration files are present, got: %d", got)
