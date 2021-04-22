@@ -42,13 +42,3 @@ func DirTreeList(directory string) []string {
 	logrus.Tracef("DirTreeList returned %s for %s", response, directory)
 	return response
 }
-
-func SafeChangeDir(path string) error {
-	if err := os.Chdir(path); err != nil {
-		if patherr := err.(*os.PathError); patherr.Err != nil {
-			logrus.Trace(err)
-			return patherr.Err
-		}
-	}
-	return nil
-}

@@ -17,7 +17,6 @@ func TestDefaultAction(t *testing.T) {
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)
 	wants := "Refreshing Terraform state in-memory prior to plan..."
-	os.Chdir("../")
 	if !strings.Contains(got, wants) {
 		t.Fatalf("tf.Plan() should run as default when action flag is not passed")
 	}
@@ -30,7 +29,6 @@ func TestInitRuns(t *testing.T) {
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)
 	wants := "Terraform has been successfully initialized!"
-	os.Chdir("../")
 	if !strings.Contains(got, wants) {
 		t.Fatalf("tf.Init() should run when action is 'init'")
 	}
@@ -43,7 +41,6 @@ func TestPlanRuns(t *testing.T) {
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)
 	wants := "Refreshing Terraform state in-memory prior to plan..."
-	os.Chdir("../")
 	if !strings.Contains(got, wants) {
 		t.Fatalf("tf.Plan() should run when action is 'plan'")
 	}
@@ -56,7 +53,6 @@ func TestApplyRuns(t *testing.T) {
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)
 	wants := "Apply complete! Resources: 0 added, 0 changed, 0 destroyed"
-	os.Chdir("../")
 	if !strings.Contains(got, wants) {
 		t.Fatalf("tf.Plan() should run when action is 'plan'")
 	}
@@ -69,7 +65,7 @@ func TestInvalidFlag(t *testing.T) {
 		deployCmd.Run(deployCmd, []string{"deploy"})
 		return
 	}
-	subCmd := exec.Command(os.Args[0], "-test.run=TestPlanWithNonMappedFlag")
+	subCmd := exec.Command(os.Args[0], "-test.run=TestInvalidFlag")
 	subCmd.Env = append(os.Environ(), "TEST_DEPLOY_FAIL=true")
 	err := subCmd.Run()
 	expectedErrorString := "exit status 1"
@@ -87,7 +83,7 @@ func TestInvalidPath(t *testing.T) {
 		deployCmd.Run(deployCmd, []string{"deploy"})
 		return
 	}
-	subCmd := exec.Command(os.Args[0], "-test.run=TestPlanWithNonMappedFlag")
+	subCmd := exec.Command(os.Args[0], "-test.run=TestInvalidPath")
 	subCmd.Env = append(os.Environ(), "TEST_DEPLOY_FAIL=true")
 	err := subCmd.Run()
 	expectedErrorString := "exit status 1"

@@ -12,8 +12,8 @@ import (
 )
 
 func Init(path string) int {
-	wd, _ := os.Getwd()
-	initExitCode := util.ExecExitCode("terraform init", wd)
+	// wd, _ := os.Getwd()
+	initExitCode := util.ExecExitCode("terraform init", path)
 	return initExitCode
 }
 
@@ -31,7 +31,7 @@ func Plan(path string, workspace string) int {
 			planArgs += addArgs
 		}
 		logrus.Tracef("Terraform plan will execute with: %s", planArgs)
-		if planResult := util.ExecExitCode("terraform plan", "-out=plan.tmp", planArgs); planResult == 2 {
+		if planResult := util.ExecExitCode("terraform plan", "-out=plan.tmp", planArgs, path); planResult == 2 {
 			logrus.Debug("INF-155 will build out plan evaluation. Always returns 0 unless evaluation fails.")
 			planExit = 0
 		} else {
@@ -61,19 +61,19 @@ func Apply(path string, workspace string) int {
 		}
 		if applyArgs != "" {
 			logrus.Tracef("Terraform apply will execute with: %s", applyArgs)
-			applyResult = util.ExecExitCode("terraform apply", applyArgs)
+			applyResult = util.ExecExitCode("terraform apply", applyArgs, path)
 		} else {
 			logrus.Trace("Terraform apply will execute with no args. This is indicative of running in a default workspace.")
-			applyResult = util.ExecExitCode("terraform apply")
+			applyResult = util.ExecExitCode("terraform apply", path)
 		}
 	}
 
 	return applyResult
 }
 
-func WorkspaceSwitch(path string, workspace string) bool {
+func WorkspaceSwitch(workspace string) bool {
 	var result bool = false
-	if IsWorkspaceValid(path, workspace) {
+	if IsWorkspaceValid(workspace) {
 		currentWorkspace, _ := exec.Command("terraform", "workspace", "show").CombinedOutput()
 		if workspace != strings.Trim(string(currentWorkspace), "\n") {
 			logrus.Infof("Switching to the %s workspace", workspace)
@@ -91,7 +91,7 @@ func WorkspaceSwitch(path string, workspace string) bool {
 	return result
 }
 
-func IsWorkspaceValid(path string, workspace string) bool {
+func IsWorkspaceValid(workspace string) bool {
 	logrus.Tracef("Checking workspace '%s' validity.", workspace)
 	var isValid bool = false
 	wsList, _ := exec.Command("terraform", "workspace", "list").CombinedOutput()
@@ -115,7 +115,7 @@ func WorkspaceExec(workspace string) (bool, string) {
 		logrus.Tracef("%s workspace provided. Skipping workspace validation for path: %s.", workspace, wd)
 		wsValid = true
 	} else {
-		wsValid = WorkspaceSwitch(wd, workspace)
+		wsValid = WorkspaceSwitch(workspace)
 		addArgs = fmt.Sprintf(" -var-file=%s.tfvars", workspace)
 	}
 	return wsValid, addArgs
