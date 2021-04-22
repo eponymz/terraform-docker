@@ -36,6 +36,10 @@ var deployCmd = &cobra.Command{
 			logrus.Fatalf("Invalid path provided. '%s' does not exist!", Path)
 		}
 
+		if err := util.SafeChangeDir(Path); err != nil {
+			logrus.Fatalf("Failed to chdir to: %s -- Error: %s", Path, err)
+		}
+
 		if init := tf.Init(Path); init > 0 {
 			logrus.Fatalf("Init returned non zero exit code: %v", init)
 		}

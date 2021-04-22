@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -82,27 +81,6 @@ func ExecExcept(exceptions []string, commandName string, args ...string) string 
 	}
 	out, _ := command.CombinedOutput()
 	return string(out)
-}
-
-func DirTreeList(directory string) []string {
-	logrus.Tracef("Running DirTreeList on %s", directory)
-	var response []string
-	err := filepath.Walk(directory,
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				logrus.Errorf("DirTreeList had an error with %s: %s", directory, err.Error())
-				return err
-			}
-			if info.IsDir() {
-				response = append(response, path)
-			}
-			return nil
-		})
-	if err != nil {
-		logrus.Error(err)
-	}
-	logrus.Tracef("DirTreeList returned %s for %s", response, directory)
-	return response
 }
 
 func ExecExceptR(exceptions []string, command string, args ...string) string {

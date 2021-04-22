@@ -12,7 +12,6 @@ import (
 )
 
 func Init(path string) int {
-	os.Chdir(path)
 	wd, _ := os.Getwd()
 	initExitCode := util.ExecExitCode("terraform init", wd)
 	return initExitCode
@@ -25,7 +24,6 @@ func Plan(path string, workspace string) int {
 	)
 
 	logrus.Tracef("Action: plan - called with args: %s", []string{path, workspace})
-	os.Chdir(path)
 	planArgs = fmt.Sprint("-detailed-exitcode")
 
 	if wsValid, addArgs := WorkspaceExec(workspace); wsValid {
@@ -53,8 +51,6 @@ func Apply(path string, workspace string) int {
 	logrus.Tracef("Running in CI/CD: %t", isAutomation)
 	logrus.Tracef("Action: apply - called with args: %s", []string{path, workspace})
 
-	os.Chdir(path)
-
 	if isAutomation {
 		applyArgs = fmt.Sprintf("-auto-approve")
 	}
@@ -77,7 +73,6 @@ func Apply(path string, workspace string) int {
 
 func WorkspaceSwitch(path string, workspace string) bool {
 	var result bool = false
-	os.Chdir(path)
 	if IsWorkspaceValid(path, workspace) {
 		currentWorkspace, _ := exec.Command("terraform", "workspace", "show").CombinedOutput()
 		if workspace != strings.Trim(string(currentWorkspace), "\n") {

@@ -93,7 +93,7 @@ func TestInvalidPath(t *testing.T) {
 	expectedErrorString := "exit status 1"
 	if exiterr, ok := err.(*exec.ExitError); ok == true {
 		if strings.Compare(expectedErrorString, exiterr.Error()) != 0 {
-			t.Fatalf("deploy command should fail for invalid actions")
+			t.Fatalf("deploy command should fail for invalid path")
 		}
 	}
 }
