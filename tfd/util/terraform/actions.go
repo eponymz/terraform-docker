@@ -105,16 +105,10 @@ func IsWorkspaceValid(path string, workspace string) bool {
 	wsList, _ := exec.Command("terraform", "workspace", "list").CombinedOutput()
 	clean := strings.ReplaceAll(string(wsList), "* ", "")
 	split := strings.Split(strings.TrimSpace(clean), "\n")
-	if len(split) > 1 {
-		if !util.SliceContains(split, workspace) {
-			logrus.Errorf("%s is not a valid workspace! Available workspaces are: %s", workspace, clean)
-		} else {
-			logrus.Tracef("%s is a valid workspace!", workspace)
-			isValid = true
-		}
-	} else {
-		logrus.Errorf("Path: %s does not utilize custom workspaces! Did you mean to pass 'default' as the workspace?", path)
+	if len(split) > 1 && util.SliceContains(split, workspace) {
+		isValid = true
 	}
+	logrus.Tracef("Available workspaces: %s, Requested workspace: %s, isValid returned: %t", split, workspace, isValid)
 	return isValid
 }
 
