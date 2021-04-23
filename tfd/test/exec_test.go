@@ -33,22 +33,6 @@ func TestExecExceptNone(t *testing.T) {
 	}
 }
 
-func TestDirTreeListOneUp(t *testing.T) {
-	got := util.DirTreeList("..")
-	wants := "../test"
-	if !util.SliceContains(got, wants) {
-		t.Fatalf("DirTreeList wants %s got %s", wants, got)
-	}
-}
-
-func TestDirTreeListPwd(t *testing.T) {
-	got := util.DirTreeList(".")
-	notWanted := "exec_test.go"
-	if util.SliceContains(got, notWanted) {
-		t.Fatalf("DirTreeList return should not contain %s, got %s", notWanted, got)
-	}
-}
-
 func TestExecExceptRPositive(t *testing.T) {
 	exceptions := []string{"../test"}
 	got := util.ExecExceptR(exceptions, "ls", "..")
@@ -73,5 +57,21 @@ func TestExecExceptRfmt(t *testing.T) {
 	wants := "Usage: terraform fmt"
 	if !strings.Contains(got, wants) {
 		t.Fatalf("ExecExceptR wants %s got %s", wants, got)
+	}
+}
+
+func TestExecExitCodeSuccess(t *testing.T) {
+	got := util.ExecExitCode("ls", ".")
+	wants := 0
+	if got != wants {
+		t.Fatalf("ExecExitCode wants %d got %d", wants, got)
+	}
+}
+
+func TestExecExitCodeNoCommand(t *testing.T) {
+	got := util.ExecExitCode("lolcat", "--help")
+	wants := 1
+	if got != wants {
+		t.Fatalf("ExecExitCode should fail to run commands that do not exist. Got %d, wants %d", got, wants)
 	}
 }

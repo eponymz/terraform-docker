@@ -5,11 +5,55 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
+	"syscall"
 
 	"github.com/sirupsen/logrus"
 )
+
+func ExecExitCode(program string, args ...string) int {
+	var safeProgram string
+	var safeArgs []string
+	var returnCode int = 0
+
+	if strings.Contains(program, " ") {
+		logrus.Tracef("Program '%s' contained spaces, splitting...", program)
+		split := strings.Split(program, " ")
+		safeProgram = split[0]
+		safeArgs = append(split[1:], args...)
+	} else {
+		safeProgram = program
+		safeArgs = args
+	}
+	logrus.Infof("Running command %s with args %s", safeProgram, safeArgs)
+	cmd := exec.Command(safeProgram, safeArgs...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	logrus.Tracef("Command %s path: %s", safeProgram, cmd.Path)
+
+	if err := cmd.Start(); err != nil {
+		logrus.Errorf("%s failed to start -- %v", program, err)
+		returnCode = 1
+	}
+
+	if err := cmd.Wait(); err != nil && returnCode == 0 {
+		if exiterr, ok := err.(*exec.ExitError); ok {
+			// Program has exited with an exit code != 0
+			if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
+				logrus.Warnf("%s exit status: %v", program, status.ExitStatus())
+				returnCode = status.ExitStatus()
+			}
+		} else {
+			logrus.Errorf("%s failed! -- %s", program, err)
+			returnCode = 1
+		}
+	}
+	if returnCode != 1 {
+		logrus.Infof("%s completed successfully!", program)
+	}
+	return returnCode
+}
 
 func ExecExcept(exceptions []string, commandName string, args ...string) string {
 	directory := args[0]
@@ -37,27 +81,6 @@ func ExecExcept(exceptions []string, commandName string, args ...string) string 
 	}
 	out, _ := command.CombinedOutput()
 	return string(out)
-}
-
-func DirTreeList(directory string) []string {
-	logrus.Tracef("Running DirTreeList on %s", directory)
-	var response []string
-	err := filepath.Walk(directory,
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				logrus.Errorf("DirTreeList had an error with %s: %s", directory, err.Error())
-				return err
-			}
-			if info.IsDir() {
-				response = append(response, path)
-			}
-			return nil
-		})
-	if err != nil {
-		logrus.Error(err)
-	}
-	logrus.Tracef("DirTreeList returned %s for %s", response, directory)
-	return response
 }
 
 func ExecExceptR(exceptions []string, command string, args ...string) string {

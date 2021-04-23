@@ -1,2 +1,7 @@
 .DS_Store
 tfd/tfd
+
+**/.terraform
+**/terraform.tfstate.d
+**/plan.tmp
+**/terraform.tfstate

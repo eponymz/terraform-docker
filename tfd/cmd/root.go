@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"tfd/cmd/validate"
+	"tfd/cmd/deploy"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"
@@ -50,6 +51,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tfd.yaml)")
 	RootCmd.PersistentFlags().StringP("verbosity", "v", "Info", "Verbosity in logging level. E.g. Info, Warn, Debug.")
 	RootCmd.AddCommand(validate.GetCmd())
+	RootCmd.AddCommand(deploy.GetCmd())
 }
 
 func InitConfig() {
