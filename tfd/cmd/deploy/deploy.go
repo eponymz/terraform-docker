@@ -2,6 +2,7 @@ package deploy
 
 import (
 	"os"
+	"strings"
 	"tfd/util"
 	tf "tfd/util/terraform"
 
@@ -17,9 +18,9 @@ var deployCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var (
 			//used for flags
-			Action       string = viper.GetString("ACTION")
-			Path         string = viper.GetString("PATH")
-			Workspace    string = viper.GetString("WORKSPACE")
+			Action       string = strings.ToLower(viper.GetString("ACTION"))
+			Path         string = strings.ToLower(viper.GetString("PATH"))
+			Workspace    string = strings.ToLower(viper.GetString("WORKSPACE"))
 			validActions        = []string{"init", "plan", "apply"}
 		)
 
@@ -35,10 +36,6 @@ var deployCmd = &cobra.Command{
 		if _, err := os.Stat(Path); os.IsNotExist(err) {
 			logrus.Fatalf("Invalid path provided. '%s' does not exist!", Path)
 		}
-
-		// if err := util.SafeChangeDir(Path); err != nil {
-		// 	logrus.Fatalf("Failed to chdir to: %s -- Error: %s", Path, err)
-		// }
 
 		if init := tf.Init(Path); init > 0 {
 			logrus.Fatalf("Init returned non zero exit code: %v", init)

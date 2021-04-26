@@ -2,58 +2,88 @@
   A docker image for pipeline validation and application with terraform projects
 
 ## TFD
-  tfd is an in-house golang project that wraps other validation projects (listed below) and adds some helpful features, such as recursive validation with specified exceptions.
+  tfd is an in-house golang project that wraps Terraform validation projects (listed below) to add some helpful features, such as recursive validation with specified exceptions as well as wrapping the Terraform CLI to allow programmatic plans and application of infrastructure resources.
 
     A Fast and Flexible tool for pipeline validation and application of Terraform.
-
+    
     Usage:
       tfd [command]
-
+    
     Available Commands:
+      deploy      deploys a terraform directory
       help        Help about any command
       validate    validates a terraform directory recursively
-
+    
     Flags:
           --config string      config file (default is $HOME/.tfd.yaml)
       -h, --help               help for tfd
       -v, --verbosity string   Verbosity in logging level. E.g. Info, Warn, Debug. (default "Info")
-
+    
     Use "tfd [command] --help" for more information about a command.
 
-<details><summary>tfd validate commands</summary>
+### Commands
+<details>
+  <summary>validate</summary>
 
-    You must pass a directory to validate command or call a subcommand.
     This command recursively validates a terraform directory
     using terraform-docs, terraform fmt, tflint, and tfsec
-
+    
     Usage:
       tfd validate [flags]
       tfd validate [command]
-
+    
     Available Commands:
       tfdoc       validates a terraform directory recursively with terraform-docs
       tffmt       validates a terraform directory recursively with tffmt
       tflint      validates a terraform directory recursively with tflint
       tfsec       validates a terraform directory recursively with tfsec
-
+    
     Flags:
       -h, --help   help for validate
+    
+    Global Flags:
+          --config string      config file (default is $HOME/.tfd.yaml)
+      -v, --verbosity string   Verbosity in logging level. E.g. Info, Warn, Debug. (default "Info")
+    
+    Use "tfd validate [command] --help" for more information about a command.
 
+</details>
+
+<details>
+  <summary>deploy</summary>
+
+    This command executes Terraform commands to deploy infrastructure.
+    
+    Usage:
+      tfd deploy [flags]
+    
+    Flags:
+      -a, --action string      Action you wish to execute in the path. (default "plan")
+          --auto-apply         Whether running in pipeline or not.
+      -h, --help               help for deploy
+      -p, --path string        Path to the directory you wish to deploy.
+      -w, --workspace string   Workspace/Environment you wish to deploy.
+    
     Global Flags:
           --config string      config file (default is $HOME/.tfd.yaml)
       -v, --verbosity string   Verbosity in logging level. E.g. Info, Warn, Debug. (default "Info")
 
-    Use "tfd validate [command] --help" for more information about a command.
-
-</details><br>
+</details>
+<br>
 
 ### Configuration
-  tfd uses [viper](https://github.com/spf13/viper) to allow configuration by file (default is $HOME/.tfd.yaml), environmental variables, or Global Flags (cobra and viper bindings).
-  <details><summary>environmental variables</summary><br>
-    All environmental variable keys are case sensitive and prefixed by TFD_
+tfd uses [viper](https://github.com/spf13/viper) to allow configuration by file (default is $HOME/.tfd.yaml), environmental variables, or Global Flags (cobra and viper bindings).
 
-    TFD_LOGLEVEL - supported values: trace, debug, warn, info (default: info). The values are case insensitive. Matching flags: -v --verbosity
-  </details><br>
+>All environmental variable **keys** are case sensitive and prefixed by `TFD_`
+
+| Name | Type | Supported Values | Default | Flags | Value Case Sensitive |
+|------|:----:|:----------------:|:-------:|:-----:|:--------------------:|
+| LOGLEVEL | `string` | trace, debug, warn, info | info | -v --verbosity | false |
+| AUTOAPPLY | `bool` | true, false | false | --auto-apply | false |
+| ACTION | `string` | init, plan, apply | plan | -a, --action | false |
+| PATH | `string` | any valid filepath | "" | -p, --path | false |
+| WORKSPACE | `string` | any valid workspace | "" | -w, --workspace | false |
+<br>
 
 ## TFLint
   [TFLint](https://github.com/terraform-linters/tflint) can be used for static code analysis to catch syntactical and some provider related errors.
