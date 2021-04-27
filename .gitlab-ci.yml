@@ -29,7 +29,7 @@ test-coverage:
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - go get -u github.com/jstemmer/go-junit-report
-    - echo $CI_REGISTRY_IMAGE
+    - go test -v ./tfd/test -coverpkg=./... 2&>1 | go-junit-report -set-exit-code > report.xml
     # - go test -v ./tfd/test -coverpkg=./... | go-junit-report -set-exit-code > report.xml
   artifacts:
     when: always
