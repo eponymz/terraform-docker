@@ -5,3 +5,4 @@ tfd/tfd
 **/terraform.tfstate.d
 **/plan.tmp
 **/terraform.tfstate
+tfd/cover.out
