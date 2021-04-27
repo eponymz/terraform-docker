@@ -35,4 +35,4 @@ test-coverage:
   artifacts:
     when: always
     reports:
-      junit: report.xml
+      junit: ../report.xml
