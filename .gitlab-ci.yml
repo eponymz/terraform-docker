@@ -29,7 +29,7 @@ test-coverage:
   image: golang:alpine3.13
   script:
     - go get -u github.com/jstemmer/go-junit-report
-    - go test -v ./test -coverpkg=./... | go-junit-report -set-exit-code > report.xml
+    - go test -v ./tfd/test -coverpkg=./... | go-junit-report -set-exit-code > report.xml
   artifacts:
     when: always
     reports:
