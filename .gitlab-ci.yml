@@ -29,4 +29,9 @@ test-coverage:
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - cd tfd
-    - go test -v ./test -coverpkg=./...
+    - go test -v ./test -coverpkg=./... -coverprofile cover.out
+    - COVERAGE_PERCENT=$(go tool cover -func cover.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+    - |
+      if [[ $COVERAGE_PERCENT -gt 80 ]]; then
+        exit 1
+      fi
