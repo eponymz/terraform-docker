@@ -26,7 +26,7 @@ main:
 
 test-coverage:
   stage: test
-  image: golang:alpine3.13
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - go get -u github.com/jstemmer/go-junit-report
     - echo $CI_REGISTRY_IMAGE
