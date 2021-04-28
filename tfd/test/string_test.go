@@ -27,3 +27,58 @@ func TestInExceptions(t *testing.T) {
 		t.Fatal("InExceptions wants true, got false")
 	}
 }
+
+func TestCleanString(t *testing.T) {
+	testString := `  default
+	* lab`
+	wants := "default lab"
+	got := util.CleanString(testString)
+	if got != wants {
+		t.Fatalf("CleanString got: %s, wants: %s", got, wants)
+	}
+}
+
+func TestCleanStringLeadingStar(t *testing.T) {
+	testString := `* default
+	  lab`
+	wants := "default lab"
+	got := util.CleanString(testString)
+	if got != wants {
+		t.Fatalf("CleanString got: %s, wants: %s", got, wants)
+	}
+}
+
+func TestCleanStringMultiLine(t *testing.T) {
+	testString := `
+	  default
+	* lab
+	`
+	wants := "default lab"
+	got := util.CleanString(testString)
+	if got != wants {
+		t.Fatalf("CleanString got: %s, wants: %s", got, wants)
+	}
+}
+
+func TestCleanStringMulti(t *testing.T) {
+	testString := `
+	  default
+	* lab
+	  billing
+	`
+	wants := "default lab billing"
+	got := util.CleanString(testString)
+	if got != wants {
+		t.Fatalf("CleanString got: %s, wants: %s", got, wants)
+	}
+}
+
+func TestCleanStringSingle(t *testing.T) {
+	testString := `* default
+	`
+	wants := "default"
+	got := util.CleanString(testString)
+	if got != wants {
+		t.Fatalf("CleanString got: %s, wants: %s", got, wants)
+	}
+}
