@@ -23,3 +23,21 @@ main:
       when: always
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
+
+coverage:
+  stage: test
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
+  script:
+    - cd tfd
+    - go test ./test -coverpkg=./... -coverprofile cover.out
+    - go tool cover -func cover.out
+    - ACCEPTABLE_PERCENT=80
+    - COVERAGE_PERCENT=$(go tool cover -func cover.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+    - COVERAGE_CHECK=$(echo "$COVERAGE_PERCENT < $ACCEPTABLE_PERCENT" | bc -l)
+    - |
+      if [ $COVERAGE_CHECK -eq 1 ]; then
+        exit 1
+      fi
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "main"'
+      when: always
