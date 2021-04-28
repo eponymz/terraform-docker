@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -36,4 +37,12 @@ func InExceptions(exceptions []string, term string) bool {
 	}
 	logrus.Tracef("Term %s was not matched in %s", term, exceptions)
 	return false
+}
+
+func CleanString(dirty string) string {
+	clean := strings.ReplaceAll(dirty, "*", "")
+	space := regexp.MustCompile(`\s+`)
+	clean = space.ReplaceAllString(clean, " ")
+	clean = strings.TrimSpace(clean)
+	return clean
 }
