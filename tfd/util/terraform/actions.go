@@ -5,7 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"tfd/util"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

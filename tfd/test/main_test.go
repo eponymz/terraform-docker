@@ -3,7 +3,8 @@ package test
 import (
 	"os"
 	"testing"
-	"tfd/cmd"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/cmd"
 )
 
 func TestMain(m *testing.M) {
