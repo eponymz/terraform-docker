@@ -10,7 +10,6 @@ import (
 
 var (
 	gitlabBaseUrl    string = "https://gitlab.com/api/v4"
-	jobURL           string = os.Getenv("CI_JOB_URL")
 	pipelineApiToken string = os.Getenv("PIPELINE_API_TOKEN")
 )
 
