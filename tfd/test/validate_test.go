@@ -4,8 +4,9 @@ import (
 	"io/ioutil"
 	"strings"
 	"testing"
-	"tfd/cmd/validate"
-	"tfd/util"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/cmd/validate"
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 )
 
 func TestTfdocClean(t *testing.T) {

@@ -3,8 +3,9 @@ package deploy
 import (
 	"os"
 	"strings"
-	"tfd/util"
-	tf "tfd/util/terraform"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
+	tf "gitlab.com/edquity/devops/terraform-docker.git/tfd/util/terraform"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

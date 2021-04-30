@@ -3,7 +3,8 @@ package test
 import (
 	"strings"
 	"testing"
-	"tfd/util"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 )
 
 func TestExecExceptAll(t *testing.T) {

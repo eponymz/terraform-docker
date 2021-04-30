@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"tfd/cmd/deploy"
-	"tfd/util"
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/cmd/deploy"
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 )
 
 func TestDefaultAction(t *testing.T) {

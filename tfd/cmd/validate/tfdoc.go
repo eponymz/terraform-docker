@@ -3,7 +3,8 @@ package validate
 import (
 	"fmt"
 	"strings"
-	"tfd/util"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 
 	logrus "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

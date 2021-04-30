@@ -2,7 +2,8 @@ package test
 
 import (
 	"testing"
-	"tfd/util"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 )
 
 func TestSliceContains(t *testing.T) {
