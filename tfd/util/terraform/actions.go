@@ -6,10 +6,10 @@ import (
 	"os/exec"
 	"strings"
 	"tfd/util"
+	"tfd/util/gitlab"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"github.com/tidwall/gjson"
 )
 
 func Init(path string) int {
@@ -51,8 +51,9 @@ func Plan(path string, workspace string) int {
 
 func PlanEval(planFile string) (bool, string) {
 	var (
-		success      bool = true
-		returnString string
+		success               bool = true
+		returnString          string
+		destructiveChangePath string = `resource_changes.#(change.actions.#(=="delete"))#.address`
 	)
 
 	logrus.Infof("Changes detected in '%s' - Evaluating for destructive changes!", planFile)
@@ -61,24 +62,26 @@ func PlanEval(planFile string) (bool, string) {
 		success = false
 	}
 
-	planShow, err := exec.Command("terraform", "show", "-json", "plan.tmp").CombinedOutput()
+	planShow, err := exec.Command("terraform", "show", "-json", planFile).CombinedOutput()
 	if err != nil {
 		returnString = fmt.Sprintf("Terraform failed to output plan file '%s'!", planFile)
+		logrus.Trace(err)
 		success = false
 	}
 
-	// TODO: wrapper method in util/json.go
-	if !gjson.Valid(string(planShow)) {
+	if valid := util.ValidateJSON(string(planShow)); valid {
+		destructiveChanges := util.GetJSON(string(planShow), destructiveChangePath).Array()
+		if len(destructiveChanges) > 1 {
+			commentBody := fmt.Sprintf("%d destructive changes found! %s", len(destructiveChanges), destructiveChanges)
+			logrus.Warn(commentBody)
+			if commentErr := gitlab.PostMRComment(commentBody); commentErr != nil {
+				returnString = fmt.Sprintf("PostMRComment failed: %s", commentErr)
+			}
+		}
+	} else {
 		returnString = fmt.Sprintf("Plan file '%s' returned invalid JSON!", planFile)
 		success = false
 	}
-	// TODO: wrapper method in util/json.go
-	destructiveChanges := gjson.Get(string(planShow), `resource_changes.#(change.actions.#(=="delete"))#.address`)
-
-	if len(destructiveChanges.Array()) > 1 {
-		logrus.Warnf("%d destructive changes found! Commenting on MR: %s")
-	}
-	logrus.Trace(destructiveChanges.Array())
 
 	return success, returnString
 }
