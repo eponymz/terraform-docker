@@ -3,7 +3,8 @@ package test
 import (
 	"fmt"
 	"testing"
-	"tfd/util"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 )
 
 var validJSON = fmt.Sprint(`{"resource_changes":[{"address":"module.address[0]","change":{"actions":["delete"],"before":{},"after":null,"after_unknown":{}}},{"address":"module.address[1]","change":{"actions":["no-op"],"before":{},"after":null,"after_unknown":{}}},{"address":"module.address[2]","change":{"actions":["delete"],"before":{},"after":null,"after_unknown":{}}},{"address":"module.address[3]","change":{"actions":["no-op"],"before":{},"after":null,"after_unknown":{}}},{"address":"module.address[4]","change":{"actions":["delete"],"before":{},"after":null,"after_unknown":{}}},{"address":"module.address[5]","change":{"actions":["no-op"],"before":{},"after":null,"after_unknown":{}}},{"address":"module.address[6]","change":{"actions":["delete"],"before":{},"after":{},"after_unknown":{}}},{"address":"module.address[7]","change":{"actions":["no-op"],"before":{},"after":null,"after_unknown":{}}}]}`)
