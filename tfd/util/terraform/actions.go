@@ -65,7 +65,6 @@ func PlanEval(planFile string) (bool, string) {
 	planShow, err := exec.Command("terraform", "show", "-json", planFile).CombinedOutput()
 	if err != nil {
 		returnString = fmt.Sprintf("Terraform failed to output plan file '%s'!", planFile)
-		logrus.Trace(err)
 		success = false
 	}
 
