@@ -2,8 +2,9 @@ package test
 
 import (
 	"testing"
-	"tfd/util"
-	tf "tfd/util/terraform"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
+	tf "gitlab.com/edquity/devops/terraform-docker.git/tfd/util/terraform"
 )
 
 func TestInit(t *testing.T) {

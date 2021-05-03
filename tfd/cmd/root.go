@@ -4,8 +4,8 @@ import (
 	"os"
 	"strings"
 
-	"tfd/cmd/validate"
-	"tfd/cmd/deploy"
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/cmd/deploy"
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/cmd/validate"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/sirupsen/logrus"

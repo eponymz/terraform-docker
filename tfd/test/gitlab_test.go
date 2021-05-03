@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"tfd/util/gitlab"
+
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util/gitlab"
 )
 
 func TestVarsNotSet(t *testing.T) {
