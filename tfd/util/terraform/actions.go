@@ -7,9 +7,11 @@ import (
 	"strings"
 
 	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
+	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util/gitlab"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/tidwall/gjson"
 )
 
 func Init(path string) int {
@@ -35,13 +37,55 @@ func Plan(path string, workspace string) int {
 		planArgs = append(planArgs, path)
 		logrus.Tracef("Terraform plan will execute against '%s' with: %s", path, planArgs)
 		if planResult := util.ExecExitCode("terraform plan", planArgs...); planResult == 2 {
-			logrus.Debug("INF-155 will build out plan evaluation. Always returns 0 unless evaluation fails.")
-			planExit = 0
+			if eval, returnString := PlanEval("plan.tmp"); eval {
+				planExit = 0
+			} else {
+				logrus.Errorf("PlanEval failed: %s", returnString)
+				planExit = 1
+			}
 		} else {
 			planExit = planResult
 		}
 	}
 	return planExit
+}
+
+func PlanEval(planFile string) (bool, string) {
+	var (
+		success               bool = true
+		returnString          string
+		destructiveChangePath string = `resource_changes.#(change.actions.#(=="delete"))#.address`
+	)
+
+	logrus.Infof("Changes detected in '%s' - Evaluating for destructive changes!", planFile)
+	if _, err := os.Stat(planFile); os.IsNotExist(err) {
+		returnString = fmt.Sprintf("Plan file '%s' does not exist!", planFile)
+		success = false
+	}
+
+	planShow, err := exec.Command("terraform", "show", "-json", planFile).CombinedOutput()
+	if err != nil {
+		returnString = fmt.Sprintf("Terraform failed to output plan file '%s'!", planFile)
+		success = false
+	}
+
+	if valid := gjson.Valid(string(planShow)); valid {
+		destructiveChanges := gjson.Get(string(planShow), destructiveChangePath).Array()
+		if len(destructiveChanges) > 0 {
+			commentBody := fmt.Sprintf("%d destructive changes found! %s", len(destructiveChanges), destructiveChanges)
+			logrus.Warn(commentBody)
+			if commentErr := gitlab.PostMRComment(commentBody); commentErr != nil {
+				returnString = fmt.Sprintf("PostMRComment failed: %s", commentErr)
+			}
+		} else {
+			logrus.Infof("No destructive changes detected!")
+		}
+	} else {
+		returnString = fmt.Sprintf("Plan file '%s' returned invalid JSON!", planFile)
+		success = false
+	}
+
+	return success, returnString
 }
 
 func Apply(path string, workspace string) int {

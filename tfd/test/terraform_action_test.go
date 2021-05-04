@@ -21,6 +21,14 @@ func TestPlanFail(t *testing.T) {
 	}
 }
 
+func TestPlanEvalFail(t *testing.T) {
+	got, _ := tf.PlanEval("../tf_fail/plan.tmp")
+	wants := false
+	if got != wants {
+		t.Fatalf("tf.PlanEval() returned: %t - Expected: %t", got, wants)
+	}
+}
+
 func TestApplyFail(t *testing.T) {
 	got := tf.Apply(".", "default")
 	if got != 1 {
