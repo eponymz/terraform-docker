@@ -11,6 +11,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"github.com/tidwall/gjson"
 )
 
 func Init(path string) int {
@@ -68,8 +69,8 @@ func PlanEval(planFile string) (bool, string) {
 		success = false
 	}
 
-	if valid := util.ValidateJSON(string(planShow)); valid {
-		destructiveChanges := util.GetJSON(string(planShow), destructiveChangePath).Array()
+	if valid := gjson.Valid(string(planShow)); valid {
+		destructiveChanges := gjson.Get(string(planShow), destructiveChangePath).Array()
 		if len(destructiveChanges) > 0 {
 			commentBody := fmt.Sprintf("%d destructive changes found! %s", len(destructiveChanges), destructiveChanges)
 			logrus.Warn(commentBody)
