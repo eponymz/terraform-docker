@@ -36,7 +36,6 @@ func Plan(path string, workspace string) int {
 		planArgs = append(planArgs, path)
 		logrus.Tracef("Terraform plan will execute against '%s' with: %s", path, planArgs)
 		if planResult := util.ExecExitCode("terraform plan", planArgs...); planResult == 2 {
-			logrus.Debug("INF-155 will build out plan evaluation. Always returns 0 unless evaluation fails.")
 			if eval, returnString := PlanEval("plan.tmp"); eval {
 				planExit = 0
 			} else {
@@ -71,12 +70,14 @@ func PlanEval(planFile string) (bool, string) {
 
 	if valid := util.ValidateJSON(string(planShow)); valid {
 		destructiveChanges := util.GetJSON(string(planShow), destructiveChangePath).Array()
-		if len(destructiveChanges) > 1 {
+		if len(destructiveChanges) > 0 {
 			commentBody := fmt.Sprintf("%d destructive changes found! %s", len(destructiveChanges), destructiveChanges)
 			logrus.Warn(commentBody)
 			if commentErr := gitlab.PostMRComment(commentBody); commentErr != nil {
 				returnString = fmt.Sprintf("PostMRComment failed: %s", commentErr)
 			}
+		} else {
+			logrus.Infof("No destructive changes detected!")
 		}
 	} else {
 		returnString = fmt.Sprintf("Plan file '%s' returned invalid JSON!", planFile)
