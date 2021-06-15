@@ -15,7 +15,12 @@ import (
 )
 
 func Init(path string) int {
-	initExitCode := util.ExecExitCode("terraform init", path)
+	var (
+		fresh       = viper.GetBool("FRESH")
+		initCommand = fmt.Sprintf("terraform init --upgrade=%t", fresh)
+	)
+	
+	initExitCode := util.ExecExitCode(initCommand, path)
 	return initExitCode
 }
 

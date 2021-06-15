@@ -8,7 +8,7 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	got := tf.Init("../tf_fail")
+	got := tf.Init("../tf_fail", )
 	if got != 0 {
 		t.Fatalf("tf.Init() should run and return 0, got: %d", got)
 	}
