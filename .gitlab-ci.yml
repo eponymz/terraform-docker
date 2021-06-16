@@ -26,6 +26,8 @@ main:
 
 coverage:
   stage: test
+  rules:
+    - when: always
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - cd tfd
