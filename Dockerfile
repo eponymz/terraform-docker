@@ -9,7 +9,7 @@ RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraf
   mv terraform /usr/bin/terraform
 RUN wget -qO hadolint https://github.com/hadolint/hadolint/releases/download/v${HADOLINT_VERSION}/hadolint-Linux-x86_64 && \
   chmod +x hadolint && mv hadolint /usr/bin/hadolint
-RUN go get github.com/terraform-docs/terraform-docs@v0.12.0
+RUN go get github.com/terraform-docs/terraform-docs@v0.14.1
 RUN go get github.com/terraform-linters/tflint@v0.29.1
 RUN go get github.com/tfsec/tfsec/cmd/tfsec@v0.40.3
 RUN apk add build-base --no-cache

@@ -60,6 +60,7 @@
     Flags:
       -a, --action string      Action you wish to execute in the path. (default "plan")
           --auto-apply         Whether running in pipeline or not.
+      -f, --fresh              Whether to pass --upgrade=true to tf.Init() or not.
       -h, --help               help for deploy
       -p, --path string        Path to the directory you wish to deploy.
       -w, --workspace string   Workspace/Environment you wish to deploy.
@@ -83,6 +84,7 @@ tfd uses [viper](https://github.com/spf13/viper) to allow configuration by file 
 | ACTION | `string` | init, plan, apply | plan | -a, --action | false |
 | PATH | `string` | any valid filepath | "" | -p, --path | false |
 | WORKSPACE | `string` | any valid workspace | "" | -w, --workspace | false |
+| FRESH | `bool` | true, false | false | -f, --fresh | false |
 <br>
 
 ## TFLint

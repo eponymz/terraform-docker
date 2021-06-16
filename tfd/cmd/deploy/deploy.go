@@ -65,7 +65,7 @@ func init() {
 	deployCmd.Flags().StringP("path", "p", "", "Path to the directory you wish to deploy.")
 	deployCmd.Flags().StringP("workspace", "w", "", "Workspace/Environment you wish to deploy.")
 	deployCmd.Flags().Bool("auto-apply", false, "Whether running in pipeline or not.")
-	deployCmd.Flags().BoolP("fresh", "f", false, "Whether to pass `--upgrade=true` or not.")
+	deployCmd.Flags().BoolP("fresh", "f", false, "Whether to pass --upgrade=true to tf.Init() or not.")
 	viper.BindPFlag("AUTOAPPLY", deployCmd.Flags().Lookup("auto-apply"))
 	viper.BindPFlag("FRESH", deployCmd.Flags().Lookup("fresh"))
 	viper.BindPFlag("ACTION", deployCmd.Flags().Lookup("action"))

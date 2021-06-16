@@ -25,7 +25,7 @@ using terraform-docs`,
 			cmd.Help()
 		} else {
 			except := strings.Split(viper.GetString("IGNORE"), " ")
-			tfdoc := util.ExecExceptRCompare(except, "README.md", "terraform-docs", args[0], "markdown", "--sort-by-required=true")
+			tfdoc := util.ExecExceptRCompare(except, "README.md", "terraform-docs", args[0], "markdown", "--sort-by", "required")
 			fmt.Print(tfdoc)
 			if strings.Contains(tfdoc, "returned differences") {
 				fmt.Println("Validation Failed!")
