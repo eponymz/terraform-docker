@@ -10,9 +10,8 @@ branch:
   extends: .build
   stage: build
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH != "main"'
       when: never
-    - when: always
   variables:
     CREATE_LATEST_IMAGE: ""
 
@@ -20,9 +19,8 @@ main:
   extends: .build
   stage: build
   rules:
-    - if: '$CI_COMMIT_BRANCH != "main"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
       when: never
-    - when: always
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
 
