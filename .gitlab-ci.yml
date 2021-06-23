@@ -30,20 +30,20 @@ include:
 branch:
   extends: .build
   stage: build
-  rules: !reference [.rules, branch]
+  rules: !reference [.rules, branch, rules]
   variables:
     CREATE_LATEST_IMAGE: ""
 
 main:
   extends: .build
   stage: build
-  rules: !reference [.rules, main]
+  rules: !reference [.rules, main, rules]
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
 
 coverage:
   stage: test
-  rules: !reference [.rules, coverage]
+  rules: !reference [.rules, coverage, rules]
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - cd tfd
