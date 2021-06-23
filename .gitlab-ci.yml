@@ -6,28 +6,44 @@ include:
   - project: 'edquity/gitlab-ops'
     file: 'token_cache_build.yml'
 
+.rules:
+  branch:
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+        when: never
+      - if: $CI_COMMIT_TAG
+        when: never
+      - if: '$CI_COMMIT_BRANCH != "main"'
+        when: always
+  main:
+    rules:
+      - if: '$CI_COMMIT_BRANCH == "main"'
+        when: always
+  coverage:
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+        when: never
+      - if: $CI_COMMIT_TAG
+        when: never
+      - when: always
+
 branch:
   extends: .build
   stage: build
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "main"'
-      when: always
+  rules: !reference [.rules, branch]
   variables:
     CREATE_LATEST_IMAGE: ""
 
 main:
   extends: .build
   stage: build
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
+  rules: !reference [.rules, main]
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
 
 coverage:
   stage: test
-  rules:
-    - when: always
+  rules: !reference [.rules, coverage]
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - cd tfd
