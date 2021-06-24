@@ -6,6 +6,7 @@ include:
   - project: "edquity/gitlab-ops"
     file: "token_cache_build.yml"
   - project: "edquity/gitlab-ops"
+    ref: "inf-248-reusable-rules"
     file: "rules.yml"
 
 branch_build:
@@ -19,7 +20,7 @@ main_build:
   extends: .build
   stage: build
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: always
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
