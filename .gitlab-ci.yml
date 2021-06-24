@@ -6,7 +6,6 @@ include:
   - project: "edquity/gitlab-ops"
     file: "token_cache_build.yml"
   - project: "edquity/gitlab-ops"
-    ref: "inf-248-reusable-rules"
     file: "rules.yml"
 
 branch_build:
