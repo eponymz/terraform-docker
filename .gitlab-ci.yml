@@ -19,9 +19,7 @@ branch_build:
 main_build:
   extends: .build
   stage: build
-  rules:
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-      when: always
+  rules: !reference [.rules, default_branch]
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
 
