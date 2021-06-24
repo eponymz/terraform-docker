@@ -3,31 +3,28 @@ stages:
   - test
 
 include:
-  - project: 'edquity/gitlab-ops'
-    file: 'token_cache_build.yml'
+  - project: "edquity/gitlab-ops"
+    file: "token_cache_build.yml"
+  - project: "edquity/gitlab-ops"
+    file: "rules.yml"
 
-branch:
+branch_build:
   extends: .build
   stage: build
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "main"'
-      when: always
+  rules: !reference [.rules, branch]
   variables:
     CREATE_LATEST_IMAGE: ""
 
-main:
+main_build:
   extends: .build
   stage: build
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
+  rules: !reference [.rules, default_branch]
   variables:
     CREATE_LATEST_IMAGE: --destination $CI_REGISTRY_IMAGE:latest
 
 coverage:
   stage: test
-  rules:
-    - when: always
+  rules: !reference [.rules, except_release]
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - cd tfd
