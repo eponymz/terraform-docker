@@ -1,12 +1,15 @@
 stages:
   - build
   - test
+  - sign
 
 include:
   - project: "edquity/gitlab-ops"
     file: "token_cache_build.yml"
   - project: "edquity/gitlab-ops"
     file: "rules.yml"
+  - project: "edquity/gitlab-ops"
+    file: "sign.yml"
 
 branch_build:
   extends: .build
@@ -37,3 +40,8 @@ coverage:
       if [ $COVERAGE_CHECK -eq 1 ]; then
         exit 1
       fi
+
+image_sign:
+  extends: .sign
+  stage: sign
+  # rules: !reference [.rules, default_branch]
