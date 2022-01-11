@@ -44,4 +44,7 @@ coverage:
 image_sign:
   extends: .sign
   stage: sign
+  variables:
+    IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID"
+    TRIVY_ADDTL_ARGS: "--skip-files usr/bin/terraform"
   # rules: !reference [.rules, default_branch]
