@@ -1,12 +1,15 @@
 stages:
   - build
   - test
+  - sign
 
 include:
   - project: "edquity/gitlab-ops"
     file: "token_cache_build.yml"
   - project: "edquity/gitlab-ops"
     file: "rules.yml"
+  - project: "edquity/gitlab-ops"
+    file: "sign.yml"
 
 branch_build:
   extends: .build
@@ -37,3 +40,11 @@ coverage:
       if [ $COVERAGE_CHECK -eq 1 ]; then
         exit 1
       fi
+
+sign:
+  extends: .sign
+  stage: sign
+  variables:
+    IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID"
+    TRIVY_ADDTL_ARGS: "--skip-files usr/bin/terraform"
+
