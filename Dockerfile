@@ -4,9 +4,9 @@ COPY Dockerfile .
 RUN hadolint Dockerfile --ignore DL3018
 
 FROM golang:alpine as gobuilder
-RUN go install github.com/terraform-docs/terraform-docs@v0.14.1
-RUN go install github.com/terraform-linters/tflint@v0.29.1
-RUN go install github.com/tfsec/tfsec/cmd/tfsec@v0.40.3
+RUN go install github.com/terraform-docs/terraform-docs@v0.14.1 && \
+    go install github.com/terraform-linters/tflint@v0.29.1 && \
+    go install github.com/tfsec/tfsec/cmd/tfsec@v0.40.3
 
 FROM golang:alpine3.16
 ARG TERRAFORM_VERSION=0.13.6
