@@ -46,20 +46,6 @@ func TestPlanRuns(t *testing.T) {
 	}
 }
 
-func TestPlanPwdRuns(t *testing.T) {
-	os.Chdir("deploy")
-	deployCmd := deploy.GetCmd()
-	deployCmd.ParseFlags([]string{"-w=default", "-a=plan", "-p=."})
-	stdout, r, w := util.CaptureStdout()
-	deployCmd.Run(deployCmd, []string{"deploy"})
-	os.Chdir("../")
-	got := util.ReleaseStdout(stdout, r, w)
-	wants := "No changes."
-	if !strings.Contains(got, wants) {
-		t.Fatalf("tf.Plan() should run when action is 'plan'")
-	}
-}
-
 func TestApplyRuns(t *testing.T) {
 	deployCmd := deploy.GetCmd()
 	deployCmd.ParseFlags([]string{"-w=default", "-a=apply", "-p=deploy"})
