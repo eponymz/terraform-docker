@@ -25,7 +25,7 @@ using tflint`,
 			cmd.Help()
 		} else {
 			except := strings.Split(viper.GetString("IGNORE"), " ")
-			tflint := util.ExecExceptR(except, "tflint", args[0])
+			tflint := util.ExecExceptR(except, "tflint", args...)
 			fmt.Print(tflint)
 			if strings.Contains(tflint, "issue(s) found") {
 				fmt.Println("Validation Failed!")

@@ -14,35 +14,34 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func Init(path string) int {
+func Init(path string, workspace string) int {
 	var (
-		fresh       = viper.GetBool("FRESH")
-		initCommand = fmt.Sprintf("terraform init --upgrade=%t", fresh)
+		fresh            = viper.GetBool("FRESH")
+		initCommand      = fmt.Sprintf("terraform -chdir=%s init --upgrade=%t", path, fresh)
+		initExitCode int = 1
 	)
-	
-	initExitCode := util.ExecExitCode(initCommand, path)
+
+	if wsValid, _ := WorkspaceExec(workspace, path); wsValid {
+		initExitCode = util.ExecExitCode(initCommand)
+	}
 	return initExitCode
 }
 
 func Plan(path string, workspace string) int {
 	var (
-		planArgs        = []string{"-out=plan.tmp", "-detailed-exitcode"}
-		planExit int    = 1
-		tfVars   string = workspace
+		planArgs           = []string{"-out=plan.tmp", "-detailed-exitcode"}
+		planCommand string = fmt.Sprintf("terraform -chdir=%s plan", path)
+		planExit    int    = 1
 	)
 
 	logrus.Tracef("Action: plan - called with args: %s", []string{path, workspace})
 	if wsValid, varFile := WorkspaceExec(workspace, path); wsValid {
-		if path != "." {
-			tfVars = fmt.Sprintf("%s/%s", path, workspace)
-		}
 		if varFile {
-			planArgs = append(planArgs, fmt.Sprintf("-var-file=%s.tfvars", tfVars))
+			planArgs = append(planArgs, fmt.Sprintf("-var-file=%s.tfvars", workspace))
 		}
-		planArgs = append(planArgs, path)
 		logrus.Tracef("Terraform plan will execute against '%s' with: %s", path, planArgs)
-		if planResult := util.ExecExitCode("terraform plan", planArgs...); planResult == 2 {
-			if eval, returnString := PlanEval("plan.tmp"); eval {
+		if planResult := util.ExecExitCode(planCommand, planArgs...); planResult == 2 {
+			if eval, returnString := PlanEval("plan.tmp", path); eval {
 				planExit = 0
 			} else {
 				logrus.Errorf("PlanEval failed: %s", returnString)
@@ -55,7 +54,7 @@ func Plan(path string, workspace string) int {
 	return planExit
 }
 
-func PlanEval(planFile string) (bool, string) {
+func PlanEval(planFile string, path string) (bool, string) {
 	var (
 		success               bool = true
 		returnString          string
@@ -68,7 +67,7 @@ func PlanEval(planFile string) (bool, string) {
 		success = false
 	}
 
-	planShow, err := exec.Command("terraform", "show", "-json", planFile).CombinedOutput()
+	planShow, err := exec.Command("terraform", fmt.Sprintf("-chdir=%s", path), "show", "-json", planFile).CombinedOutput()
 	if err != nil {
 		returnString = fmt.Sprintf("Terraform failed to output plan file '%s'!", planFile)
 		success = false
@@ -95,8 +94,9 @@ func PlanEval(planFile string) (bool, string) {
 
 func Apply(path string, workspace string) int {
 	var (
-		applyArgs   []string
-		applyResult int = 1
+		applyArgs    []string
+		applyCommand string = fmt.Sprintf("terraform -chdir=%s apply", path)
+		applyResult  int    = 1
 	)
 
 	isAutomation := viper.GetBool("AUTOAPPLY")
@@ -111,15 +111,12 @@ func Apply(path string, workspace string) int {
 		if varFile {
 			applyArgs = append(applyArgs, fmt.Sprintf("-var-file=%s.tfvars", workspace))
 		}
-		if path != "." {
-			applyArgs = append(applyArgs, fmt.Sprintf("%s", path))
-		}
 		if varFile {
 			logrus.Tracef("Terraform apply will execute with: %s", applyArgs)
-			applyResult = util.ExecExitCode("terraform apply", applyArgs...)
+			applyResult = util.ExecExitCode(applyCommand, applyArgs...)
 		} else {
 			logrus.Trace("Terraform apply will execute with no args. This is indicative of running in a default workspace.")
-			applyResult = util.ExecExitCode("terraform apply", path)
+			applyResult = util.ExecExitCode(applyCommand)
 		}
 	}
 
@@ -127,12 +124,15 @@ func Apply(path string, workspace string) int {
 }
 
 func WorkspaceSwitch(workspace string, path string) bool {
-	var result bool = false
+	var (
+		wsSelectCommand string = fmt.Sprintf("terraform -chdir=%s workspace", path)
+		result          bool   = false
+	)
 	if IsWorkspaceValid(workspace, path) {
-		currentWorkspace, _ := exec.Command("terraform", "workspace", "show", path).CombinedOutput()
+		currentWorkspace, _ := exec.Command("terraform", fmt.Sprintf("-chdir=%s", path), "workspace", "show").CombinedOutput()
 		if workspace != strings.Trim(string(currentWorkspace), "\n") {
 			logrus.Infof("Switching to the %s workspace", workspace)
-			switchWsExitCode := util.ExecExitCode("terraform workspace", "select", workspace, path)
+			switchWsExitCode := util.ExecExitCode(wsSelectCommand, "select", workspace)
 			if switchWsExitCode > 0 {
 				logrus.Errorf("Failed to switch workspace to %s", workspace)
 			} else {
@@ -149,7 +149,7 @@ func WorkspaceSwitch(workspace string, path string) bool {
 func IsWorkspaceValid(workspace string, path string) bool {
 	logrus.Tracef("Checking workspace '%s' validity.", workspace)
 	var isValid bool = false
-	wsList, _ := exec.Command("terraform", "workspace", "list", path).CombinedOutput()
+	wsList, _ := exec.Command("terraform", fmt.Sprintf("-chdir=%s", path), "workspace", "list").CombinedOutput()
 	cleaned := util.CleanString(string(wsList))
 	split := strings.Split(cleaned, " ")
 	logrus.Trace(len(split))

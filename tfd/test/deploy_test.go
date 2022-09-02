@@ -12,13 +12,13 @@ import (
 
 func TestDefaultAction(t *testing.T) {
 	deployCmd := deploy.GetCmd()
-	deployCmd.ParseFlags([]string{"-w=default", "-p=./deploy"})
+	deployCmd.ParseFlags([]string{"-w=default", "-p=deploy"})
 	stdout, r, w := util.CaptureStdout()
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)
-	wants := "Refreshing Terraform state in-memory prior to plan..."
+	wants := "No changes."
 	if !strings.Contains(got, wants) {
-		t.Fatalf("tf.Plan() should run as default when action flag is not passed")
+		t.Fatalf("Expected output: %s Got output: %s", wants, got)
 	}
 }
 
@@ -36,11 +36,11 @@ func TestInitRuns(t *testing.T) {
 
 func TestPlanRuns(t *testing.T) {
 	deployCmd := deploy.GetCmd()
-	deployCmd.ParseFlags([]string{"-w=default", "-a=plan", "-p=./deploy"})
+	deployCmd.ParseFlags([]string{"-w=default", "-a=plan", "-p=deploy"})
 	stdout, r, w := util.CaptureStdout()
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)
-	wants := "Refreshing Terraform state in-memory prior to plan..."
+	wants := "No changes."
 	if !strings.Contains(got, wants) {
 		t.Fatalf("tf.Plan() should run when action is 'plan'")
 	}
@@ -54,7 +54,7 @@ func TestPlanPwdRuns(t *testing.T) {
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	os.Chdir("../")
 	got := util.ReleaseStdout(stdout, r, w)
-	wants := "Refreshing Terraform state in-memory prior to plan..."
+	wants := "No changes."
 	if !strings.Contains(got, wants) {
 		t.Fatalf("tf.Plan() should run when action is 'plan'")
 	}
@@ -62,23 +62,9 @@ func TestPlanPwdRuns(t *testing.T) {
 
 func TestApplyRuns(t *testing.T) {
 	deployCmd := deploy.GetCmd()
-	deployCmd.ParseFlags([]string{"-w=default", "-a=apply", "-p=./deploy"})
+	deployCmd.ParseFlags([]string{"-w=default", "-a=apply", "-p=deploy"})
 	stdout, r, w := util.CaptureStdout()
 	deployCmd.Run(deployCmd, []string{"deploy"})
-	got := util.ReleaseStdout(stdout, r, w)
-	wants := "Apply complete! Resources: 0 added, 0 changed, 0 destroyed"
-	if !strings.Contains(got, wants) {
-		t.Fatalf("tf.Plan() should run when action is 'plan'")
-	}
-}
-
-func TestApplyPwdRuns(t *testing.T) {
-	os.Chdir("deploy")
-	deployCmd := deploy.GetCmd()
-	deployCmd.ParseFlags([]string{"-w=default", "-a=apply", "-p=."})
-	stdout, r, w := util.CaptureStdout()
-	deployCmd.Run(deployCmd, []string{"deploy"})
-	os.Chdir("../")
 	got := util.ReleaseStdout(stdout, r, w)
 	wants := "Apply complete! Resources: 0 added, 0 changed, 0 destroyed"
 	if !strings.Contains(got, wants) {
