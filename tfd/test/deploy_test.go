@@ -12,7 +12,7 @@ import (
 
 func TestDefaultAction(t *testing.T) {
 	deployCmd := deploy.GetCmd()
-	deployCmd.ParseFlags([]string{"-w=default", "-p=deploy"})
+	deployCmd.ParseFlags([]string{"-w=default", "-p=./deploy"})
 	stdout, r, w := util.CaptureStdout()
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)

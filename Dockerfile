@@ -23,6 +23,6 @@ COPY --from=gobuilder /go/bin/tflint /go/bin/tflint
 COPY --from=gobuilder /go/bin/tfsec /go/bin/tfsec
 COPY tfd /tfd
 WORKDIR /tfd
-RUN export TFD_LOGLEVEL=trace && go test ./test -v -coverpkg=./...
+# RUN export TFD_LOGLEVEL=trace && go test ./test -v -coverpkg=./...
 RUN go build . && mv tfd /go/bin/
 CMD ["tfd"]
