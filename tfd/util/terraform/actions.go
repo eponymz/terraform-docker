@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"strings"
 
-	// "gitlab.com/edquity/devops/go-common.git/pkg/executil"
 	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util/gitlab"
 
