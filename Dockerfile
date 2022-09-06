@@ -25,6 +25,6 @@ RUN wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraf
   unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
   mv terraform /usr/bin/terraform
 # Build and test binary
-RUN ./build.sh
 RUN export TFD_LOGLEVEL=trace && go test ./test -v -coverpkg=./...
+RUN go build . && mv tfd /go/bin/
 CMD ["tfd"]
