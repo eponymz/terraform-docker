@@ -12,12 +12,13 @@ import (
 
 func TestDefaultAction(t *testing.T) {
 	deployCmd := deploy.GetCmd()
-	deployCmd.ParseFlags([]string{"-w=default", "-p=./deploy"})
+	deployCmd.ParseFlags([]string{"-w=default", "-p=deploy"})
 	stdout, r, w := util.CaptureStdout()
 	deployCmd.Run(deployCmd, []string{"deploy"})
 	got := util.ReleaseStdout(stdout, r, w)
 	wants := "No changes."
 	if !strings.Contains(got, wants) {
+		// t.Fatalf("tf.Plan() should run as default when action flag is not passed")
 		t.Fatalf("Expected output: %s Got output: %s", wants, got)
 	}
 }

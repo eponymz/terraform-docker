@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	// "gitlab.com/edquity/devops/go-common.git/pkg/executil"
 	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
 	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util/gitlab"
 
@@ -17,13 +18,17 @@ import (
 func Init(path string, workspace string) int {
 	var (
 		fresh            = viper.GetBool("FRESH")
-		initCommand      = fmt.Sprintf("terraform -chdir=%s init --upgrade=%t", path, fresh)
+		initCommand      = fmt.Sprintf("terraform -chdir=%s init", path)
+		initArgs         = []string{fmt.Sprintf("--upgrade=%t", fresh)}
 		initExitCode int = 1
 	)
 
 	if wsValid, _ := WorkspaceExec(workspace, path); wsValid {
-		initExitCode = util.ExecExitCode(initCommand)
+		initExit := util.ExecExitCode(initCommand, initArgs...)
+		initExitCode = initExit
+		// initOutput = initOut
 	}
+
 	return initExitCode
 }
 
