@@ -9,4 +9,4 @@ else
 fi
 
 go install . 
-rm $HOME/.gitconfig
+rm .gitconfig
