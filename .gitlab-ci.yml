@@ -31,8 +31,10 @@ coverage:
   image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME-$CI_PIPELINE_IID
   script:
     - cd tfd
-    - go test ./test -coverpkg=./... -coverprofile cover.out
-    - go tool cover -func cover.out
+    - go test ./test -coverpkg=./... -coverprofile=cover.txt -covermode count
+    - go get github.com/boumenot/gocover-cobertura
+    - go run github.com/boumenot/gocover-cobertura < cover.txt > coverage.xml
+    - go tool cover -func cover.txt
     - ACCEPTABLE_PERCENT=80
     - COVERAGE_PERCENT=$(go tool cover -func cover.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
     - COVERAGE_CHECK=$(echo "$COVERAGE_PERCENT < $ACCEPTABLE_PERCENT" | bc -l)
@@ -40,6 +42,11 @@ coverage:
       if [ $COVERAGE_CHECK -eq 1 ]; then
         exit 1
       fi
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
 
 sign:
   extends: .sign
