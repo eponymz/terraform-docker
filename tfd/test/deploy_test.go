@@ -18,8 +18,7 @@ func TestDefaultAction(t *testing.T) {
 	got := util.ReleaseStdout(stdout, r, w)
 	wants := "No changes."
 	if !strings.Contains(got, wants) {
-		// t.Fatalf("tf.Plan() should run as default when action flag is not passed")
-		t.Fatalf("Expected output: %s Got output: %s", wants, got)
+		t.Fatalf("tf.Plan() should run as default when action flag is not passed")
 	}
 }
 
