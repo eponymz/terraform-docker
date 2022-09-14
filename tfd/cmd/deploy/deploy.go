@@ -38,7 +38,7 @@ var deployCmd = &cobra.Command{
 			logrus.Fatalf("Invalid path provided. '%s' does not exist!", Path)
 		}
 
-		if init := tf.Init(Path); init > 0 {
+		if init := tf.Init(Path, Workspace); init > 0 {
 			logrus.Fatalf("Init returned non zero exit code: %v", init)
 		}
 

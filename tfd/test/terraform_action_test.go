@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"testing"
 
 	"gitlab.com/edquity/devops/terraform-docker.git/tfd/util"
@@ -8,9 +9,26 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	got := tf.Init("../tf_fail")
+	var (
+		testDir string = "deploy"
+		testWs  string = "testValid"
+	)
+	util.ExecExitCode("terraform", fmt.Sprintf("-chdir=%s", testDir), "workspace", "new", testWs)
+	got := tf.Init(testDir, testWs)
 	if got != 0 {
 		t.Fatalf("tf.Init() should run and return 0, got: %d", got)
+	}
+}
+
+func TestInitFail(t *testing.T) {
+	var (
+		testDir string = "deploy"
+		testWs  string = "testValid"
+	)
+	util.ExecExitCode("terraform", fmt.Sprintf("-chdir=%s", testDir), "workspace", "new", testWs)
+	got := tf.Init(testDir, "testInvalid")
+	if got != 1 {
+		t.Fatalf("tf.Init() should return 1 when the workspace provided is invalid, got: %d", got)
 	}
 }
 
@@ -22,7 +40,7 @@ func TestPlanFail(t *testing.T) {
 }
 
 func TestPlanEvalFail(t *testing.T) {
-	got, _ := tf.PlanEval("../tf_fail/plan.tmp")
+	got, _ := tf.PlanEval("plan.tmp", "../tf_fail/")
 	wants := false
 	if got != wants {
 		t.Fatalf("tf.PlanEval() returned: %t - Expected: %t", got, wants)

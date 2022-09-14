@@ -49,6 +49,7 @@ func TestTffmt(t *testing.T) {
 
 func TestTflint(t *testing.T) {
 	tflint := validate.GettflintCmd()
+	tflint.Run(tflint, []string{"lint", "--init"})
 	stdout, r, w := util.CaptureStdout()
 	tflint.Run(tflint, []string{"lint"})
 	got := util.ReleaseStdout(stdout, r, w)

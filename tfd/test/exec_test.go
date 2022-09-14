@@ -55,7 +55,7 @@ func TestExecExceptRNegative(t *testing.T) {
 func TestExecExceptRfmt(t *testing.T) {
 	exceptions := []string{"../test", "empty"}
 	got := util.ExecExceptR(exceptions, "terraform fmt", ".", "--help")
-	wants := "Usage: terraform fmt"
+	wants := "Usage: terraform [global options] fmt [options] [DIR]"
 	if !strings.Contains(got, wants) {
 		t.Fatalf("ExecExceptR wants %s got %s", wants, got)
 	}
